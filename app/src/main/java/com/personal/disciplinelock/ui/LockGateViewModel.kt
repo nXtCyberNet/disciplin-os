@@ -263,8 +263,4 @@ class LockGateViewModel(application: Application) : AndroidViewModel(application
             appsWhitelistManager.refreshInstalledApps()
         }
     }
-
-    fun toggleTestMode() {
-        disciplineModeManager.toggleTestMode()
-    }
 }

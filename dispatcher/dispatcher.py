@@ -95,61 +95,78 @@ class MissionDispatcher:
             self.last_sync_date = today
             self.add_log("RESET", f"New day rollover ({today}); cleared fulfilled cache.")
 
+    def get_candidate_phone_urls(self) -> list[str]:
+        urls = []
+        configured = self.config.get("phone_url", "").strip().rstrip("/")
+        if configured:
+            urls.append(configured)
+        for fallback in ["http://100.76.223.105:8080", "http://127.0.0.1:8080"]:
+            if fallback not in urls:
+                urls.append(fallback)
+        return urls
+
     def fetch_phone_missions(self) -> list[dict]:
-        phone_url = self.config.get("phone_url", "http://127.0.0.1:8080").rstrip("/")
-        url = f"{phone_url}/webhook/missions"
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "DisciplineDispatcher/1.0"})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                missions = data.get("missions", [])
-                cache = load_cache()
-                for m in missions:
-                    t = m.get("title", "").strip()
-                    if t in cache:
-                        m["target"] = cache[t]
-                return missions
-        except Exception as e:
-            return []
+        for phone_url in self.get_candidate_phone_urls():
+            url = f"{phone_url}/webhook/missions"
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "DisciplineDispatcher/1.0"})
+                with urllib.request.urlopen(req, timeout=4) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    missions = data.get("missions", [])
+                    cache = load_cache()
+                    for m in missions:
+                        t = m.get("title", "").strip()
+                        if t in cache:
+                            m["target"] = cache[t]
+                    return missions
+            except Exception:
+                continue
+        return []
 
     def fetch_phone_status(self) -> dict:
-        phone_url = self.config.get("phone_url", "http://127.0.0.1:8080").rstrip("/")
-        url = f"{phone_url}/webhook/status"
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": "DisciplineDispatcher/1.0"})
-            with urllib.request.urlopen(req, timeout=5) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
-                data["connected"] = True
-                return data
-        except Exception as e:
-            return {"connected": False, "error": str(e), "phone_url": phone_url}
+        last_err = "No endpoint responded"
+        for phone_url in self.get_candidate_phone_urls():
+            url = f"{phone_url}/webhook/status"
+            try:
+                req = urllib.request.Request(url, headers={"User-Agent": "DisciplineDispatcher/1.0"})
+                with urllib.request.urlopen(req, timeout=4) as resp:
+                    data = json.loads(resp.read().decode("utf-8"))
+                    data["connected"] = True
+                    data["phone_url"] = phone_url
+                    return data
+            except Exception as e:
+                last_err = str(e)
+                continue
+        return {"connected": False, "error": last_err, "phone_url": self.config.get("phone_url")}
 
     def trigger_phone_mission(self, target: str, source: str = "Discipline PC Dispatcher") -> tuple[bool, str]:
-        phone_url = self.config.get("phone_url", "http://127.0.0.1:8080").rstrip("/")
         encoded_target = urllib.parse.quote(target.strip())
-        url = f"{phone_url}/webhook/mission/{encoded_target}"
-
-        try:
-            req = urllib.request.Request(
-                url,
-                data=b"",
-                headers={"User-Agent": f"DisciplineDispatcher ({source})"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, timeout=6) as resp:
-                res_body = resp.read().decode("utf-8")
-                res_json = json.loads(res_body)
-                if res_json.get("status") == "success" or res_json.get("verified") is True:
-                    matched = res_json.get("mission", target)
-                    self.add_log("DISPATCH", f"Successfully verified mission '{matched}' on phone via webhook", True)
-                    return True, matched
-                else:
-                    msg = res_json.get("message", "No matching mission found on phone")
-                    self.add_log("DISPATCH", f"Failed to verify '{target}': {msg}", False)
-                    return False, msg
-        except Exception as e:
-            self.add_log("ERROR", f"Error dispatching webhook to {url}: {e}", False)
-            return False, str(e)
+        last_err = ""
+        for phone_url in self.get_candidate_phone_urls():
+            url = f"{phone_url}/webhook/mission/{encoded_target}"
+            try:
+                req = urllib.request.Request(
+                    url,
+                    data=b"",
+                    headers={"User-Agent": f"DisciplineDispatcher ({source})"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    res_body = resp.read().decode("utf-8")
+                    res_json = json.loads(res_body)
+                    if res_json.get("status") == "success" or res_json.get("verified") is True:
+                        matched = res_json.get("mission", target)
+                        self.add_log("DISPATCH", f"Successfully verified mission '{matched}' via {phone_url}", True)
+                        return True, matched
+                    else:
+                        msg = res_json.get("message", "No matching mission found on phone")
+                        self.add_log("DISPATCH", f"Failed to verify '{target}': {msg}", False)
+                        return False, msg
+            except Exception as e:
+                last_err = str(e)
+                continue
+        self.add_log("ERROR", f"Error dispatching webhook for '{target}': {last_err}", False)
+        return False, last_err
 
     def add_phone_mission(self, title: str) -> tuple[bool, str]:
         phone_url = self.config.get("phone_url", "http://127.0.0.1:8080").rstrip("/")

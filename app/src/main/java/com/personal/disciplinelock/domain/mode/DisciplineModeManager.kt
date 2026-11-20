@@ -79,17 +79,9 @@ class DisciplineModeManager(
     val gateStatus: StateFlow<DisciplineGateStatus> = _gateStatus.asStateFlow()
 
     private val securePreferences = com.personal.disciplinelock.data.SecurePreferences(context)
-    private val prefs = context.getSharedPreferences("discipline_test_mode_prefs", Context.MODE_PRIVATE)
-    private var testModeOverride: DisciplineMode? = null
     private var lastAppliedMode: DisciplineMode? = null
 
     init {
-        val savedMode = prefs.getString("test_mode_override", DisciplineMode.NORMAL_PHONE.name)
-        testModeOverride = try {
-            if (savedMode != null) DisciplineMode.valueOf(savedMode) else DisciplineMode.NORMAL_PHONE
-        } catch (_: Exception) {
-            DisciplineMode.NORMAL_PHONE
-        }
         observeSubsystems()
         reEvaluateGateStatus()
     }
@@ -191,16 +183,10 @@ class DisciplineModeManager(
             }
         }
 
-        val finalMode = testModeOverride ?: mode
-        val finalSummary = when {
-            testModeOverride == DisciplineMode.NORMAL_PHONE -> "Testing Mode Active (Normal Phone Unlocked)"
-            testModeOverride == DisciplineMode.DISCIPLINED_PHONE -> "Testing Mode Active (Disciplined Mode Simulated)"
-            else -> summary
-        }
-        Log.d(TAG, "Mode updated: $finalMode ($completedCount/$totalGates gates cleared)")
+        Log.d(TAG, "Mode updated: $mode ($completedCount/$totalGates gates cleared)")
 
         _gateStatus.value = DisciplineGateStatus(
-            currentMode = finalMode,
+            currentMode = mode,
             isMathPassed = isMathPassed,
             isMathBlocked = isMathBlocked,
             isHabitsDone = isHabitsDone,
@@ -209,13 +195,13 @@ class DisciplineModeManager(
             totalGates = totalGates,
             completedGates = completedCount,
             progressFraction = fraction,
-            statusSummary = finalSummary,
+            statusSummary = summary,
             overallStreak = obligations.overallStreak
         )
 
-        if (finalMode != lastAppliedMode) {
-            lastAppliedMode = finalMode
-            applyAppFreezingForMode(finalMode)
+        if (mode != lastAppliedMode) {
+            lastAppliedMode = mode
+            applyAppFreezingForMode(mode)
         }
     }
 
@@ -285,20 +271,4 @@ class DisciplineModeManager(
                pkg.contains("mendhak.gpslogger")
     }
 
-    fun toggleTestMode(): DisciplineMode {
-        val current = _gateStatus.value.currentMode
-        testModeOverride = if (current == DisciplineMode.NORMAL_PHONE) {
-            DisciplineMode.DISCIPLINED_PHONE
-        } else {
-            DisciplineMode.NORMAL_PHONE
-        }
-        prefs.edit().putString("test_mode_override", testModeOverride?.name).apply()
-        reEvaluateGateStatus()
-        return _gateStatus.value.currentMode
-    }
-
-    fun forceUnlockNormalPhone() {
-        testModeOverride = DisciplineMode.NORMAL_PHONE
-        reEvaluateGateStatus()
-    }
 }

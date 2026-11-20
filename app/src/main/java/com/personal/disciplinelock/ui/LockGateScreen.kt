@@ -50,8 +50,7 @@ fun LockGateScreen(
                 onToggleHabit = { viewModel.toggleHabit(it) },
                 whitelistedApps = installedApps,
                 onLaunchApp = { viewModel.launchApp(it) },
-                onNavigateToWhitelist = { viewModel.selectTab(LockTab.WHITELIST) },
-                onToggleTestMode = { viewModel.toggleTestMode() }
+                onNavigateToWhitelist = { viewModel.selectTab(LockTab.WHITELIST) }
             )
         }
         LockTab.MATH_ENGINE -> {

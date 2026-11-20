@@ -91,7 +91,6 @@ public class DisciplineHudFragment extends GenericViewFragment implements
     private Button btnAlarmTune;
     private LinearLayout layoutAlarmActions;
     private Button btnAlarmSnooze;
-    private Button btnAlarmTest;
 
     // Containers: Pre-workout vs Active
     private LinearLayout layoutPreWorkout;
@@ -206,7 +205,6 @@ public class DisciplineHudFragment extends GenericViewFragment implements
         btnVoiceToggle = v.findViewById(R.id.hud_btn_voice_toggle);
         layoutAlarmActions = v.findViewById(R.id.hud_layout_alarm_actions);
         btnAlarmSnooze = v.findViewById(R.id.hud_btn_alarm_snooze);
-        btnAlarmTest = v.findViewById(R.id.hud_btn_alarm_test);
 
         layoutPreWorkout = v.findViewById(R.id.hud_layout_pre_workout);
         layoutActiveWorkout = v.findViewById(R.id.hud_layout_active_workout);
@@ -249,12 +247,7 @@ public class DisciplineHudFragment extends GenericViewFragment implements
         if (btnAlarmTune != null) {
             btnAlarmTune.setOnClickListener(v -> showRingtoneSelectionDialog());
         }
-        if (btnAlarmTest != null) {
-            btnAlarmTest.setOnClickListener(v -> {
-                alarmManager.triggerAlarm();
-                Toast.makeText(getContext(), "Morning Alarm Test Triggered!", Toast.LENGTH_SHORT).show();
-            });
-        }
+
         if (btnAlarmSnooze != null) {
             btnAlarmSnooze.setOnClickListener(v -> alarmManager.snoozeAlarm());
         }
