@@ -1,6 +1,7 @@
 package com.mendhak.gpslogger.discipline;
 
 import android.app.AlarmManager;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +16,10 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import androidx.core.app.NotificationCompat;
 import com.mendhak.gpslogger.GpsMainActivity;
+import com.mendhak.gpslogger.R;
+import com.mendhak.gpslogger.common.NotificationChannelNames;
 import com.mendhak.gpslogger.common.slf4j.Logs;
 import org.slf4j.Logger;
 
@@ -259,6 +263,48 @@ public class MorningAlarmManager {
         setAlarmExact(context, triggerAtMs);
         LOG.info("Alarm snoozed for " + minutes + " minutes until " + new Date(triggerAtMs));
         return triggerAtMs;
+    }
+
+    public static void postSnoozeNotification(Context context, long nextTriggerMs, int snoozeMins) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        String timeStr = sdf.format(new Date(nextTriggerMs));
+
+        Intent contentIntent = new Intent(context, GpsMainActivity.class);
+        contentIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent contentPi = PendingIntent.getActivity(
+                context,
+                MorningAlarmReceiver.REQUEST_CODE_ACTIVITY,
+                contentIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
+        );
+
+        Intent runIntent = new Intent(context, MorningAlarmReceiver.class);
+        runIntent.setAction(MorningAlarmReceiver.ACTION_START_RUN);
+        PendingIntent runPi = PendingIntent.getBroadcast(
+                context,
+                MorningAlarmReceiver.REQUEST_CODE_ACTION_RUN,
+                runIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0)
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelNames.GPSLOGGER_ALARM)
+                .setSmallIcon(R.mipmap.gpsloggericon3)
+                .setContentTitle("⏰ Alarm Snoozed (" + snoozeMins + "m)")
+                .setContentText("Next alarm at " + timeStr + ". Put on your running shoes!")
+                .setSubText("Discipline Mission")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setOngoing(true)
+                .setAutoCancel(false)
+                .setContentIntent(contentPi)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .addAction(0, "🏃 START NOW", runPi);
+
+        nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
+        LOG.info("Posted Snooze countdown notification until " + timeStr);
     }
 
     public static void scheduleTestAlarm(Context context, int delaySeconds) {

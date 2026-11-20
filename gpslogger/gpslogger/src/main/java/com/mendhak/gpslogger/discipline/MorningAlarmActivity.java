@@ -58,6 +58,7 @@ public class MorningAlarmActivity extends AppCompatActivity {
     private TextView txtTime;
     private TextView txtAmPm;
     private TextView txtDate;
+    private TextView txtTarget;
     private Button btnStartRun;
     private Button btnSnooze;
 
@@ -91,18 +92,18 @@ public class MorningAlarmActivity extends AppCompatActivity {
     }
 
     private void configureWindowForLockscreen() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(0xFF121212);
+            getWindow().setNavigationBarColor(0xFF121212);
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
-            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-            if (keyguardManager != null) {
-                keyguardManager.requestDismissKeyguard(this, null);
-            }
         }
 
         getWindow().addFlags(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                 WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         );
@@ -112,8 +113,24 @@ public class MorningAlarmActivity extends AppCompatActivity {
         txtTime = findViewById(R.id.alarm_txt_time);
         txtAmPm = findViewById(R.id.alarm_txt_ampm);
         txtDate = findViewById(R.id.alarm_txt_date);
+        txtTarget = findViewById(R.id.alarm_txt_target);
         btnStartRun = findViewById(R.id.alarm_btn_start_run);
         btnSnooze = findViewById(R.id.alarm_btn_snooze);
+
+        if (txtTarget != null) {
+            try {
+                DisciplineWebhookClient client = DisciplineWebhookClient.getInstance(this);
+                double distKm = client.getTargetDistanceMeters() / 1000.0;
+                float pace = client.getTargetPaceMinPerKm();
+                if (distKm > 0) {
+                    int paceMin = (int) pace;
+                    int paceSec = (int) ((pace - paceMin) * 60);
+                    txtTarget.setText(String.format(Locale.getDefault(), "🏃 Target: %.1f km • Max Pace: %d:%02d/km", distKm, paceMin, paceSec));
+                }
+            } catch (Exception ex) {
+                LOG.warn("Could not bind target text: " + ex.getMessage());
+            }
+        }
     }
 
     private void setupActions() {
@@ -176,6 +193,14 @@ public class MorningAlarmActivity extends AppCompatActivity {
         // Auto start GPS workout and dispatch webhook
         triggerWorkoutStart(this);
 
+        // Request keyguard dismissal if locked so HUD opens cleanly
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            KeyguardManager km = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+            if (km != null && km.isKeyguardLocked()) {
+                km.requestDismissKeyguard(this, null);
+            }
+        }
+
         // Launch HUD screen directly
         Intent hudIntent = new Intent(this, GpsMainActivity.class);
         hudIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -191,10 +216,10 @@ public class MorningAlarmActivity extends AppCompatActivity {
 
         LOG.info("Alarm snoozed from alarm screen!");
         stopAlarmAudioAndVibration();
-        dismissNotification(this);
 
         int snoozeMins = MorningAlarmManager.getSnoozeMinutes(this);
         long nextTrigger = MorningAlarmManager.scheduleSnooze(this, snoozeMins);
+        MorningAlarmManager.postSnoozeNotification(this, nextTrigger, snoozeMins);
 
         String formattedTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(nextTrigger));
         Toast.makeText(this, "💤 Snoozed for " + snoozeMins + " min (" + formattedTime + ")", Toast.LENGTH_LONG).show();

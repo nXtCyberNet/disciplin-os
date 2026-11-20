@@ -2,9 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/hud_bg"
+    android:background="#121212"
+    android:fitsSystemWindows="true"
     android:keepScreenOn="true"
-    android:padding="24dp">
+    android:paddingStart="24dp"
+    android:paddingTop="28dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="24dp">
 
     <!-- Top Status / Discipline Pill -->
     <LinearLayout
@@ -13,8 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/hud_pill_bg"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/alarm_pill_bg"
         android:gravity="center"
         android:paddingStart="16dp"
         android:paddingTop="6dp"
@@ -25,9 +29,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.1"
+            android:letterSpacing="0.08"
             android:text="⚡ DISCIPLINE MISSION ACTIVE"
-            android:textColor="@color/hud_accent_green"
+            android:textColor="#22C55E"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -45,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="⏰"
-            android:textSize="56sp" />
+            android:textSize="52sp" />
 
         <TextView
             android:id="@+id/alarm_txt_time"
@@ -55,17 +59,17 @@
             android:fontFamily="sans-serif-black"
             android:includeFontPadding="false"
             android:text="06:00:00"
-            android:textColor="@color/hud_text_primary"
-            android:textSize="52sp" />
+            android:textColor="#F8FAFC"
+            android:textSize="54sp" />
 
         <TextView
             android:id="@+id/alarm_txt_ampm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-bold"
-            android:letterSpacing="0.15"
+            android:letterSpacing="0.12"
             android:text="AM"
-            android:textColor="@color/hud_accent_green"
+            android:textColor="#22C55E"
             android:textSize="18sp" />
 
         <TextView
@@ -73,17 +77,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:fontFamily="sans-serif"
+            android:fontFamily="sans-serif-medium"
             android:text="Today"
-            android:textColor="@color/hud_text_secondary"
+            android:textColor="#94A3B8"
             android:textSize="14sp" />
 
-        <!-- Mission Card -->
+        <!-- Mission Card in System Dark Surface Theme -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:background="@drawable/hud_card_bg"
+            android:background="@drawable/alarm_card_bg"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="20dp">
@@ -92,9 +96,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="0.08"
+                android:letterSpacing="0.06"
                 android:text="🌅 MORNING RUN MISSION"
-                android:textColor="@color/hud_text_primary"
+                android:textColor="#F8FAFC"
                 android:textSize="16sp" />
 
             <TextView
@@ -104,22 +108,22 @@
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
                 android:text="&quot;Wake up. Put on your shoes. No excuses.&quot;"
-                android:textColor="@color/hud_text_secondary"
+                android:textColor="#94A3B8"
                 android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/alarm_txt_target"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/hud_mission_button"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/alarm_tag_bg"
                 android:fontFamily="sans-serif-bold"
                 android:paddingStart="12dp"
                 android:paddingTop="5dp"
                 android:paddingEnd="12dp"
                 android:paddingBottom="5dp"
-                android:text="🏃 Auto-start GPS Workout Logging"
-                android:textColor="@color/hud_accent_green"
+                android:text="🏃 Live GPS Route Tracking Active"
+                android:textColor="#22C55E"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
@@ -130,18 +134,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="32dp"
         android:orientation="vertical">
 
-        <!-- Primary Start Run & Wake Up Button -->
+        <!-- Primary Start Now Button -->
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/alarm_btn_start_run"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
-            android:background="@drawable/hud_button_start"
+            android:layout_height="58dp"
+            android:background="@drawable/alarm_btn_start"
             android:fontFamily="sans-serif-black"
-            android:letterSpacing="0.06"
-            android:text="🏃 START RUN &amp; WAKE UP"
+            android:letterSpacing="0.05"
+            android:text="🏃 START NOW"
             android:textColor="#FFFFFF"
             android:textSize="17sp" />
 
@@ -149,13 +153,13 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/alarm_btn_snooze"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="50dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/hud_button_snooze"
+            android:background="@drawable/alarm_btn_snooze"
             android:fontFamily="sans-serif-bold"
             android:letterSpacing="0.04"
             android:text="💤 SNOOZE (15 MIN)"
-            android:textColor="@color/hud_accent_blue"
+            android:textColor="#F1F5F9"
             android:textSize="15sp" />
 
         <TextView
@@ -165,7 +169,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="sans-serif"
             android:text="Starting run silences alarm and begins live GPS route tracking"
-            android:textColor="@color/hud_text_muted"
+            android:textColor="#64748B"
             android:textSize="11sp" />
     </LinearLayout>
 

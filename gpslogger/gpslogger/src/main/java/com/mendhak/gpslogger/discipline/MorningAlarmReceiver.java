@@ -51,9 +51,9 @@ public class MorningAlarmReceiver extends BroadcastReceiver {
 
         if (ACTION_SNOOZE_ALARM.equals(action)) {
             LOG.info("Notification action: Snooze clicked.");
-            MorningAlarmActivity.dismissNotification(context);
             int snoozeMins = MorningAlarmManager.getSnoozeMinutes(context);
-            MorningAlarmManager.scheduleSnooze(context, snoozeMins);
+            long nextTrigger = MorningAlarmManager.scheduleSnooze(context, snoozeMins);
+            MorningAlarmManager.postSnoozeNotification(context, nextTrigger, snoozeMins);
             return;
         }
 
@@ -61,6 +61,9 @@ public class MorningAlarmReceiver extends BroadcastReceiver {
             LOG.info("Notification action: Start Run clicked.");
             MorningAlarmActivity.dismissNotification(context);
             MorningAlarmActivity.triggerWorkoutStart(context);
+            Intent hudIntent = new Intent(context, com.mendhak.gpslogger.GpsMainActivity.class);
+            hudIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            context.startActivity(hudIntent);
             return;
         }
 
