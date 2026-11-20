@@ -10,12 +10,13 @@ local.properties
 captures/
 .DS_Store
 
-# Built Application Binaries
+# Built Application Binaries & Archives
 *.apk
 *.ap_
 *.aab
 *.dex
 *.class
+*.zip
 
 # Python & Local Secrets
 __pycache__/

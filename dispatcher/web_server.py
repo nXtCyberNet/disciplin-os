@@ -195,7 +195,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         <h1>⚡ Discipline Mission Dispatcher</h1>
         <p>PC / Server automated webhook bridge for phone missions</p>
       </div>
-      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <a href="/download/DisciplineOS-Phone-Bundle.zip" class="btn btn-primary" style="text-decoration: none; padding: 6px 14px; font-size: 12px; background: #8B5CF6; color: #fff; border-color: #8B5CF6;">📦 Download Phone Bundle ZIP</a>
+        <a href="/download/DisciplineOS-Suite-KernelSU.zip" class="btn btn-primary" style="text-decoration: none; padding: 6px 14px; font-size: 12px; background: #F59E0B; color: #fff; border-color: #F59E0B;">⚡ KernelSU Suite ZIP</a>
         <a href="/download/DisciplineLock.apk" class="btn btn-primary" style="text-decoration: none; padding: 6px 14px; font-size: 12px; background: var(--accent); color: #fff; border-color: var(--accent);">📥 Download Lock APK</a>
         <a href="/download/HealthHub.apk" class="btn btn-primary" style="text-decoration: none; padding: 6px 14px; font-size: 12px; background: #10B981; color: #fff; border-color: #10B981;">🏃 Download Health Hub APK</a>
         <div id="phone-status" class="status-badge status-disconnected">
@@ -704,6 +705,20 @@ class DispatcherHttpHandler(BaseHTTPRequestHandler):
                 return
             else:
                 self.send_error(404, "Health Hub APK not found")
+        if url_path.startswith("/download/") and url_path.endswith(".zip"):
+            filename = url_path.split("/")[-1]
+            zip_path = Path(__file__).resolve().parent.parent / "build" / "outputs" / filename
+            if not zip_path.exists():
+                zip_path = Path(__file__).resolve().parent.parent / "apk_distribution" / filename
+            if zip_path.exists():
+                self.send_response(200)
+                self.send_header("Content-Type", "application/zip")
+                self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+                self.send_header("Content-Length", str(zip_path.stat().st_size))
+                self.end_headers()
+                return
+            else:
+                self.send_error(404, "Zip file not found")
                 return
 
         self.send_error(404, "Not Found")
@@ -748,6 +763,25 @@ class DispatcherHttpHandler(BaseHTTPRequestHandler):
                 return
             else:
                 self.send_error(404, "Health Hub APK not found")
+                return
+
+        if url_path.startswith("/download/") and url_path.endswith(".zip"):
+            filename = url_path.split("/")[-1]
+            zip_path = Path(__file__).resolve().parent.parent / "build" / "outputs" / filename
+            if not zip_path.exists():
+                zip_path = Path(__file__).resolve().parent.parent / "apk_distribution" / filename
+            if zip_path.exists():
+                self.send_response(200)
+                self.send_header("Content-Type", "application/zip")
+                self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+                self.send_header("Content-Length", str(zip_path.stat().st_size))
+                self.end_headers()
+                with open(zip_path, "rb") as zf:
+                    while chunk := zf.read(65536):
+                        self.wfile.write(chunk)
+                return
+            else:
+                self.send_error(404, "Zip file not found")
                 return
 
         if url_path == "/api/status":
