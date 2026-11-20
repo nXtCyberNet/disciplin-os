@@ -77,9 +77,16 @@ class DisciplineModeManager(
     val gateStatus: StateFlow<DisciplineGateStatus> = _gateStatus.asStateFlow()
 
     private val securePreferences = com.personal.disciplinelock.data.SecurePreferences(context)
+    private val prefs = context.getSharedPreferences("discipline_test_mode_prefs", Context.MODE_PRIVATE)
     private var testModeOverride: DisciplineMode? = null
 
     init {
+        val savedMode = prefs.getString("test_mode_override", DisciplineMode.NORMAL_PHONE.name)
+        testModeOverride = try {
+            if (savedMode != null) DisciplineMode.valueOf(savedMode) else DisciplineMode.NORMAL_PHONE
+        } catch (_: Exception) {
+            DisciplineMode.NORMAL_PHONE
+        }
         observeSubsystems()
         reEvaluateGateStatus()
     }
@@ -182,6 +189,11 @@ class DisciplineModeManager(
         }
 
         val finalMode = testModeOverride ?: mode
+        val finalSummary = when {
+            testModeOverride == DisciplineMode.NORMAL_PHONE -> "Testing Mode Active (Normal Phone Unlocked)"
+            testModeOverride == DisciplineMode.DISCIPLINED_PHONE -> "Testing Mode Active (Disciplined Mode Simulated)"
+            else -> summary
+        }
         Log.d(TAG, "Mode updated: $finalMode ($completedCount/$totalGates gates cleared)")
 
         _gateStatus.value = DisciplineGateStatus(
@@ -194,18 +206,19 @@ class DisciplineModeManager(
             totalGates = totalGates,
             completedGates = completedCount,
             progressFraction = fraction,
-            statusSummary = summary,
+            statusSummary = finalSummary,
             overallStreak = obligations.overallStreak
         )
     }
 
     fun toggleTestMode(): DisciplineMode {
-        testModeOverride = when (testModeOverride) {
-            null -> DisciplineMode.NORMAL_PHONE
-            DisciplineMode.NORMAL_PHONE -> DisciplineMode.DISCIPLINED_PHONE
-            DisciplineMode.DISCIPLINED_PHONE -> null
-            else -> null
+        val current = _gateStatus.value.currentMode
+        testModeOverride = if (current == DisciplineMode.NORMAL_PHONE) {
+            DisciplineMode.DISCIPLINED_PHONE
+        } else {
+            DisciplineMode.NORMAL_PHONE
         }
+        prefs.edit().putString("test_mode_override", testModeOverride?.name).apply()
         reEvaluateGateStatus()
         return _gateStatus.value.currentMode
     }

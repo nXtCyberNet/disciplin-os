@@ -51,7 +51,8 @@ fun MissionsScreen(
     onToggleHabit: (Long) -> Unit,
     whitelistedApps: List<WhitelistAppItem> = emptyList(),
     onLaunchApp: (String) -> Unit = {},
-    onNavigateToWhitelist: () -> Unit = {}
+    onNavigateToWhitelist: () -> Unit = {},
+    onToggleTestMode: () -> Unit = {}
 ) {
     var showAddDialog by remember { mutableStateOf(false) }
     var newMissionTitle by remember { mutableStateOf("") }
@@ -150,6 +151,50 @@ fun MissionsScreen(
                         ) {
                             Text("Reset: $dailyResetFormattedTime", fontSize = 11.sp, color = Color.Gray)
                             Text(gateStatus.statusSummary, fontSize = 11.sp, color = Color.LightGray)
+                        }
+
+                        HorizontalDivider(color = Color(0xFF30363D), thickness = 0.8.dp)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "Testing Mode Controller",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                                Text(
+                                    if (isNormalMode) "Phone is unlocked (Normal Mode)" else "Disciplined Mode is simulated",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                            Button(
+                                onClick = onToggleTestMode,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isNormalMode) Color(0xFF238636) else Color(0xFF1F6FEB)
+                                ),
+                                shape = RoundedCornerShape(10.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isNormalMode) Icons.Default.Lock else Icons.Default.LockOpen,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp),
+                                    tint = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    if (isNormalMode) "Test Disciplined" else "Switch to Normal",
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
                 }
