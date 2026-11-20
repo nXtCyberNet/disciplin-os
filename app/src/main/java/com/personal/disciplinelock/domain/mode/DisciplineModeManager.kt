@@ -281,6 +281,7 @@ class DisciplineModeManager(
                pkg.contains("google.android.gms") ||
                pkg.contains("google.android.gsf") ||
                pkg.contains("google.android.dialer") ||
+               pkg.contains("com.nxtcybernet.disciplinerun") ||
                pkg.contains("mendhak.gpslogger")
     }
 

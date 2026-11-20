@@ -6,8 +6,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
 
-    <string name="app_name_release">GPSLogger</string>
-    <string name="settings_screen_name">GPSLogger Settings</string>
+    <string name="app_name_release">Discipline Run</string>
+    <string name="settings_screen_name">Discipline Run Settings</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="hide">Hide</string>
@@ -536,7 +536,7 @@
     <string name="log_dawarich_filepath">Buffer file path</string>
     <string name="log_dawarich_filepath_summary">The path where the persistence file of the buffer is saved to</string>
     <string name="log_dawarich_apikey">Dawarich API-key</string>
-    <string name="app_name_debug">GPSLogger DEV</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_title">Bulk upload minimum locations</string>
     <string name="dawarich_bulk_min_summary">Minimum amount of locations to bundle for bulk upload (waits until amount
         is reached before sending)

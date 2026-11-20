@@ -288,7 +288,7 @@
     <string name="txt_timestamp_epoch">Stempel waktu (epoch)</string>
     <string name="txt_starttimestamp_epoch">Stempel waktu mulai (epoch)</string>
     <string name="txt_battery">Baterai</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="hide">Sembunyikan</string>
     <string name="summary_current_filename">File:</string>
     <string name="error">Kesalahan</string>
@@ -416,7 +416,7 @@
     <string name="log_dawarich_filepath">Jalur file buffer</string>
     <string name="log_dawarich_filepath_summary">Jalur tempat file persistensi buffer disimpan</string>
     <string name="log_dawarich_apikey">Kunci API Dawarich</string>
-    <string name="app_name_debug">GPSLogger DEV</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_title">Jumlah minimum lokasi untuk unggah massal</string>
     <string name="dawarich_bulk_min_summary">Jumlah minimum lokasi yang digabungkan untuk unggah massal (menunggu hingga jumlah tercapai sebelum mengirim)</string>
     <string name="dawarich_bulk_max_title">Jumlah maksimum lokasi untuk unggah massal</string>

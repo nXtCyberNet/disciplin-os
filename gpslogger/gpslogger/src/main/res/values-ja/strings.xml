@@ -316,7 +316,7 @@
     <string name="txt_battery">バッテリー</string>
     <string name="customurl_http_basicauthentication">Basic認証</string>
     <string name="hide_notification_from_status_bar_disallowed">通知を非表示にすることはAndroid Oreo以降では許可されていません</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="ok">了解</string>
     <string name="cancel">キャンセル</string>
     <string name="retry_get_best_possible_accuracy_summary">正確な最初のポイントを記録する代わりに、精度の持続時間を試行し、最も精度の高いポイントを選択します。 時間はかかりますが、より正確にポイントを記録できる可能性が高まります。</string>
@@ -417,7 +417,7 @@
     <string name="log_dawarich_filepath">バッファファイルのパス</string>
     <string name="log_dawarich_filepath_summary">永続的なバッファファイルの保存先パス</string>
     <string name="log_dawarich_apikey">ダワリッチのAPIキー</string>
-    <string name="app_name_debug">GPSLogger 開発</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_title">一括アップロード位置情報の最低値</string>
     <string name="dawarich_bulk_min_summary">一括アップロード実施時にバンドルする位置情報の最小値（指定された数へ達するまで送信を待機します）</string>
     <string name="dawarich_bulk_max_title">一括アップロードの最大値</string>

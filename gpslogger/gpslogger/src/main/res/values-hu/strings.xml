@@ -3,7 +3,7 @@
     <string name="title_drawer_uploadsettings">Feltöltési beállítások</string>
     <string name="navigation_drawer_open">Navigációs menü</string>
     <string name="navigation_drawer_close">Navigációs menü bezárása</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="settings_screen_name">GPSLogger Beállítások</string>
     <string name="ok">OK</string>
     <string name="cancel">Mégse</string>
@@ -414,7 +414,7 @@
     <string name="log_dawarich_filepath">Pufferfájl elérési útja</string>
     <string name="log_dawarich_filepath_summary">Elérési út, ahová a puffer tartós fájl mentésre kerül</string>
     <string name="log_dawarich_apikey">Dawarich API-kulcs</string>
-    <string name="app_name_debug">GPSLogger fejlesztő</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_title">Minimális helymeghatározás a tömeges feltöltéshez</string>
     <string name="dawarich_bulk_min_summary">Tömeges feltöltéshez összevonandó helymeghatározások minimális száma (rendszer a szám eléréséig vár, mielőtt elküldené az adatokat)</string>
     <string name="dawarich_bulk_max_title">Maximális helymeghatározás a tömeges feltöltéshez</string>

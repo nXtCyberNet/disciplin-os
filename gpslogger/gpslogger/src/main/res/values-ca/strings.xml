@@ -84,7 +84,7 @@
     <string name="enabledisablegps_summary">Anar a opcions del telèfon per activar o desactivar proveïdors.</string>
     <string name="title_drawer_uploadsettings">Pujar configuració</string>
     <string name="hide">Ocultar</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="error">Error</string>
     <string name="gpsprovider_unavailable">Proveïdor de GPS no disponible. Si us plau comprova les opcions d\'ubicació i activa un proveïdor.</string>
     <string name="seconds"> s</string>
@@ -410,7 +410,7 @@
     <string name="log_dawarich_filepath">Buffer file path</string>
     <string name="log_dawarich_filepath_summary">El camí on es guarda el fitxer de persistència del buffer</string>
     <string name="log_dawarich_apikey">Dawarich API-key</string>
-    <string name="app_name_debug">GPSLogger DEV</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_summary">Quantitat mínima d\'ubicacions per a la càrrega a l\'engròs (espera fins a l\'import s\'arriba abans de l\'enviament)</string>
     <string name="dawarich_bulk_max_title">Localitzacions màximes per càrrega a l\'engros</string>
     <string name="listeners_fused">Fusionat</string>

@@ -61,6 +61,7 @@ class SecurePreferences(context: Context) {
             "com.android.phone",
             "com.android.server.telecom",
             "com.android.settings",
+            "com.nxtcybernet.disciplinerun",
             "com.mendhak.gpslogger",
             "com.mendhak.gpslogger.debug"
         )

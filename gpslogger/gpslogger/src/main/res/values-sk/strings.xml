@@ -3,7 +3,7 @@
     <string name="title_drawer_uploadsettings">Nastavenia odosielania</string>
     <string name="navigation_drawer_open">Otvoriť vykresľovač navigácie</string>
     <string name="navigation_drawer_close">Zatvoriť vykresľovač navigácie</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="settings_screen_name">Nastavenia GPSLogger</string>
     <string name="ok">OK</string>
     <string name="cancel">Zrušiť</string>
@@ -433,7 +433,7 @@ polia.
     <string name="log_dawarich_filepath">Cesta k súboru vyrovnávacej pamäte</string>
     <string name="log_dawarich_filepath_summary">Cesta, na ktorej je uložený trvalý súbor pre vyrovnávaciu pamäť</string>
     <string name="log_dawarich_apikey">Kľúč API pre Dawarich</string>
-    <string name="app_name_debug">GPSLogger DEV</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="dawarich_bulk_min_title">Minimálny počet polôh na hromadné odoslanie</string>
     <string name="dawarich_bulk_min_summary">Minimálny počet polôh na spojenie do jedného hromadného odoslania (pred odoslaním sa čaká na dosiahnutie tohto počtu)</string>
     <string name="dawarich_bulk_max_title">Maximálny počet polôh na hromadné odoslanie</string>

@@ -40,17 +40,17 @@ android {
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.mendhak.gpslogger"
+        applicationId "com.nxtcybernet.disciplinerun"
         minSdkVersion 21
 
         targetSdkVersion 35
         compileSdk 35
-        versionCode 139
-        versionName "139-rc1"
+        versionCode 140
+        versionName "1.0.0"
 
         // Used by AppAuth-Android
         manifestPlaceholders = [
-                appAuthRedirectScheme: 'com.mendhak.gpslogger',
+                appAuthRedirectScheme: 'com.nxtcybernet.disciplinerun',
                 appIcon: "@mipmap/gpsloggericon3"
         ]
     }
@@ -61,10 +61,11 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
             debuggable true
-            applicationIdSuffix ".debug"
+            applicationIdSuffix ""
             versionNameSuffix "-DEBUG"
             resValue "string", "app_name", "@string/app_name_debug"
             manifestPlaceholders = [
+                    appAuthRedirectScheme: 'com.nxtcybernet.disciplinerun',
                     appIcon: "@mipmap/gpsloggericon_debug"
             ]
         }
@@ -75,6 +76,7 @@ android {
             debuggable false
             resValue "string", "app_name", "@string/app_name_release"
             manifestPlaceholders = [
+                    appAuthRedirectScheme: 'com.nxtcybernet.disciplinerun',
                     appIcon: "@mipmap/gpsloggericon3"
             ]
         }

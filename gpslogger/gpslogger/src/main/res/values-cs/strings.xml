@@ -301,7 +301,7 @@
     <string name="customurl_basicauth_hide_password">Skrýt heslo</string>
     <string name="customurl_basicauth_hide_password_summary">Heslo nepůjde zobrazit v plaintextu a neexportuje se do souboru profilu</string>
     <string name="hide_notification_from_status_bar_disallowed">Skrytí notifikací není povoleno ve verzi Android Oreo a novějším</string>
-    <string name="app_name_release">GPSLogger</string>
+    <string name="app_name_release">Discipline Run</string>
     <string name="ok">OK</string>
     <string name="hide">Skrýt</string>
     <string name="summary_freq_max">maximum</string>

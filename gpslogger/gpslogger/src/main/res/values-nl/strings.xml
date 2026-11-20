@@ -350,7 +350,7 @@
     <string name="only_log_if_significant_motion_summary">Alleen registreren als er significante activiteit wordt gedetecteerd, zoals wandelen, fietsen of autorijden. Significante beweging wordt bepaald door je besturingssysteem.</string>
     <string name="time_in_minutes_dialog_title">Tijd in minuten</string>
     <string name="log_dawarich_setup_title">Dawarich</string>
-    <string name="app_name_debug">GPSLogger DEV</string>
+    <string name="app_name_debug">Discipline Run</string>
     <string name="http_file_upload_http_headers">HTTP-headers</string>
     <string name="http_file_upload_body_type">Versleuteling</string>
     <string name="http_file_upload_setup_title">Bestanden uploaden via HTTP</string>

@@ -3,7 +3,9 @@ set -e
 
 # ==============================================================================
 # KernelSU & Magisk Systemless Module Builder for Discipline OS Suite
-# Target Device: Moto G45 5G (fogos) running EvolutionX
+# Target Device: Moto G45 5G (fogos) running EvolutionX / Android 15
+# Controls everything: Systemless Priv-App, Automated Perms, Battery Whitelist,
+# KernelSU Root Elevation, and Watchdog Supervisor.
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,23 +14,21 @@ LOCK_APK="${SCRIPT_DIR}/app/build/outputs/apk/debug/app-debug.apk"
 GPS_APK="${SCRIPT_DIR}/gpslogger/gpslogger/build/outputs/apk/debug/gpslogger-debug.apk"
 
 mkdir -p "${OUTPUT_DIR}"
+mkdir -p "${SCRIPT_DIR}/apk_distribution"
 
-echo "=== Discipline OS: Building KernelSU Compliant Flashable Modules ==="
+echo "=== Discipline OS: Building KernelSU Master Controller Flashable Modules ==="
 
-# 1. Build APKs if missing
+# 1. Ensure APKs are up to date
 if [ ! -f "${LOCK_APK}" ]; then
-    echo "DisciplineLock APK not found. Compiling..."
-    cd "${SCRIPT_DIR}"
-    ./gradlew assembleDebug
+    echo "Compiling DisciplineLock APK..."
+    (cd "${SCRIPT_DIR}" && ./gradlew assembleDebug)
 fi
 
 if [ ! -f "${GPS_APK}" ]; then
-    echo "GPSLogger APK not found. Compiling..."
-    cd "${SCRIPT_DIR}/gpslogger"
-    ./gradlew assembleDebug
+    echo "Compiling Discipline Run (GPS) APK..."
+    (cd "${SCRIPT_DIR}/gpslogger" && ./gradlew assembleDebug)
 fi
 
-# Function to build a compliant module
 build_module() {
     local mod_id="$1"
     local mod_name="$2"
@@ -45,18 +45,18 @@ build_module() {
     # Copy Discipline Lock APK
     cp "${LOCK_APK}" "${staging_dir}/system/priv-app/DisciplineLock/DisciplineLock.apk"
 
-    # Optionally copy GPSLogger APK
+    # Optionally copy Discipline Run GPS APK
     if [ "${include_gps}" = "true" ]; then
-        mkdir -p "${staging_dir}/system/app/GPSLogger"
-        cp "${GPS_APK}" "${staging_dir}/system/app/GPSLogger/GPSLogger.apk"
+        mkdir -p "${staging_dir}/system/app/DisciplineRun"
+        cp "${GPS_APK}" "${staging_dir}/system/app/DisciplineRun/DisciplineRun.apk"
     fi
 
     # module.prop
     cat << EOF > "${staging_dir}/module.prop"
 id=${mod_id}
 name=${mod_name}
-version=v1.0.0
-versionCode=1
+version=v2.0.0
+versionCode=200
 author=cybernet
 description=${mod_desc}
 EOF
@@ -68,36 +68,48 @@ EOF
     <privapp-permissions package="com.personal.disciplinelock">
         <permission name="android.permission.PACKAGE_USAGE_STATS"/>
         <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
     </privapp-permissions>
     <privapp-permissions package="com.personal.disciplinelock.debug">
         <permission name="android.permission.PACKAGE_USAGE_STATS"/>
         <permission name="android.permission.MANAGE_USERS"/>
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
+    </privapp-permissions>
+    <privapp-permissions package="com.nxtcybernet.disciplinerun">
+        <permission name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+        <permission name="android.permission.START_ACTIVITIES_FROM_BACKGROUND"/>
     </privapp-permissions>
 </permissions>
 EOF
 
-    # customize.sh
+    # customize.sh (Installer script executed during flashing in KernelSU/Magisk)
     cat << 'EOF' > "${staging_dir}/customize.sh"
 SKIPUNZIP=0
 
-ui_print "**********************************************"
-ui_print "*   Discipline OS KernelSU Module Installer  *"
-ui_print "**********************************************"
+ui_print "****************************************************"
+ui_print "*   Discipline OS Master Suite Module Installer     *"
+ui_print "*       Strict Morning Alarm & App Freezing        *"
+ui_print "****************************************************"
 
-ui_print "- Installing systemless priv-app binaries..."
+ui_print "- Installing systemless priv-app & system binaries..."
 set_perm_recursive "$MODPATH" 0 0 0755 0644
 
 if [ -f "$MODPATH/system/priv-app/DisciplineLock/DisciplineLock.apk" ]; then
     set_perm "$MODPATH/system/priv-app/DisciplineLock/DisciplineLock.apk" 0 0 0644
-    ui_print "  [+] Installed DisciplineLock priv-app"
+    ui_print "  [+] Installed DisciplineLock (Privileged System App)"
 fi
 
-if [ -f "$MODPATH/system/app/GPSLogger/GPSLogger.apk" ]; then
-    set_perm "$MODPATH/system/app/GPSLogger/GPSLogger.apk" 0 0 0644
-    ui_print "  [+] Installed GPSLogger Health Hub app"
+if [ -f "$MODPATH/system/app/DisciplineRun/DisciplineRun.apk" ]; then
+    set_perm "$MODPATH/system/app/DisciplineRun/DisciplineRun.apk" 0 0 0644
+    ui_print "  [+] Installed DisciplineRun (System GPS Run Tracker)"
 fi
 
-ui_print "- Module installation complete! Reboot device to activate."
+if [ -f "$MODPATH/service.sh" ]; then
+    set_perm "$MODPATH/service.sh" 0 0 0755
+    ui_print "  [+] Configured Systemless Master Control Daemon"
+fi
+
+ui_print "- Installation successful! Reboot device to activate Discipline OS."
 EOF
 
     # META-INF/com/google/android/updater-script
@@ -136,44 +148,97 @@ fi
 install_module
 exit 0
 EOF
-
     chmod 755 "${staging_dir}/META-INF/com/google/android/update-binary"
 
-    # service.sh (Late-start service that ensures package manager registers the APKs)
+    # service.sh (Master Supervisor Daemon executed at boot as Root)
     cat << 'EOF' > "${staging_dir}/service.sh"
 #!/system/bin/sh
 MODDIR=${0%/*}
 
-# Wait for boot completion
+# Log supervisor execution
+exec >> /data/local/tmp/discipline_module.log 2>&1
+echo "[$(date)] Discipline OS Master Daemon Starting..."
+
+# Wait for Android boot completion
 while [ "$(getprop sys.boot_completed)" != "1" ]; do
   sleep 2
 done
 
-sleep 3
+echo "[$(date)] Android system booted. Initializing Discipline OS controls..."
+sleep 4
 
-# Force Package Manager to register APKs if not already indexed
+# 1. Force Package Manager registration of systemless APKs if needed
 if [ -f "$MODDIR/system/priv-app/DisciplineLock/DisciplineLock.apk" ]; then
     pm install -r -d -g "$MODDIR/system/priv-app/DisciplineLock/DisciplineLock.apk" 2>/dev/null || true
 fi
 
-if [ -f "$MODDIR/system/app/GPSLogger/GPSLogger.apk" ]; then
-    pm install -r -d -g "$MODDIR/system/app/GPSLogger/GPSLogger.apk" 2>/dev/null || true
+if [ -f "$MODDIR/system/app/DisciplineRun/DisciplineRun.apk" ]; then
+    pm install -r -d -g "$MODDIR/system/app/DisciplineRun/DisciplineRun.apk" 2>/dev/null || true
 fi
+
+# 2. Automatically grant all runtime & special permissions to Discipline OS components
+TARGET_PACKAGES="com.personal.disciplinelock com.personal.disciplinelock.debug com.nxtcybernet.disciplinerun"
+
+for pkg in $TARGET_PACKAGES; do
+    echo "[$(date)] Granting permissions to $pkg..."
+    pm grant "$pkg" android.permission.POST_NOTIFICATIONS 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_FINE_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_COARSE_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_BACKGROUND_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACTIVITY_RECOGNITION 2>/dev/null || true
+    pm grant "$pkg" android.permission.SCHEDULE_EXACT_ALARM 2>/dev/null || true
+    appops set "$pkg" PACKAGE_USAGE_STATS allow 2>/dev/null || true
+    appops set "$pkg" SYSTEM_ALERT_WINDOW allow 2>/dev/null || true
+    appops set "$pkg" SCHEDULE_EXACT_ALARM allow 2>/dev/null || true
+    appops set "$pkg" ACCESS_RESTRICTED_SETTINGS allow 2>/dev/null || true
+    dumpsys deviceidle whitelist +"$pkg" 2>/dev/null || true
+done
+
+# 3. Ensure KernelSU / ReSukiSU root access is permitted
+if [ -d "/data/adb/ksu" ]; then
+    echo "[$(date)] KernelSU environment detected. Ensuring profiles are active..."
+    # ksud profile commands if available
+    if command -v ksud >/dev/null 2>&1; then
+        for pkg in $TARGET_PACKAGES; do
+            ksud profile set-sepolicy "$pkg" default 2>/dev/null || true
+        done
+    fi
+fi
+
+# 4. Start Discipline Lock Persistent Service & Alarm Engine
+am start-foreground-service -n com.personal.disciplinelock.debug/com.personal.disciplinelock.system.LockGateService 2>/dev/null || \
+am start-foreground-service -n com.personal.disciplinelock/com.personal.disciplinelock.system.LockGateService 2>/dev/null || true
+
+echo "[$(date)] Discipline OS Master Daemon initialized successfully."
+
+# 5. Background Watchdog Supervisor
+(
+    while true; do
+        sleep 60
+        # Ensure lock gate service stays alive
+        if ! pgrep -f "com.personal.disciplinelock" > /dev/null; then
+            echo "[$(date)] Watchdog: Discipline Lock stopped. Restarting service..."
+            am start-foreground-service -n com.personal.disciplinelock.debug/com.personal.disciplinelock.system.LockGateService 2>/dev/null || \
+            am start-foreground-service -n com.personal.disciplinelock/com.personal.disciplinelock.system.LockGateService 2>/dev/null || true
+        fi
+    done
+) &
+
 EOF
     chmod 755 "${staging_dir}/service.sh"
 
-    # Package zip
+    # Package flashable zip
     rm -f "${output_zip}"
     cd "${staging_dir}"
     zip -r "${output_zip}" ./*
-    echo "Generated: ${output_zip}"
+    echo "Generated Module Zip: ${output_zip}"
 }
 
-# Build Suite Module
+# Build Master Suite Module
 build_module \
     "discipline-os-suite" \
-    "Discipline OS & Health Hub Suite" \
-    "Systemless installation of Discipline Lock & GPSLogger Health Hub for EvolutionX with KernelSU." \
+    "Discipline OS Master Suite" \
+    "Systemless Discipline OS: Lock Gate, Root App Suspension, and Discipline Run GPS Mission Hub." \
     "${SCRIPT_DIR}/build/ksu_suite_staging" \
     "${OUTPUT_DIR}/DisciplineOS-Suite-KernelSU.zip" \
     "true"
@@ -182,12 +247,12 @@ build_module \
 build_module \
     "discipline-lock-privapp" \
     "Discipline Lock System Priv-App" \
-    "Installs Discipline Lock systemlessly as a privileged system app for tamper-proof persistence on EvolutionX with KernelSU." \
+    "Installs Discipline Lock systemlessly as a privileged system app for tamper-proof persistence." \
     "${SCRIPT_DIR}/build/ksu_lock_staging" \
     "${OUTPUT_DIR}/DisciplineLock-KernelSU-PrivApp.zip" \
     "false"
 
-# Mirror to apk_distribution
+# Mirror to distribution directory
 cp "${OUTPUT_DIR}/DisciplineOS-Suite-KernelSU.zip" "${SCRIPT_DIR}/apk_distribution/"
 cp "${OUTPUT_DIR}/DisciplineLock-KernelSU-PrivApp.zip" "${SCRIPT_DIR}/apk_distribution/"
 
