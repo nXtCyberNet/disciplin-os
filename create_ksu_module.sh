@@ -109,7 +109,40 @@ if [ -f "$MODPATH/service.sh" ]; then
     ui_print "  [+] Configured Systemless Master Control Daemon"
 fi
 
-ui_print "- Installation successful! Reboot device to activate Discipline OS."
+ui_print "- Activating & registering applications immediately..."
+if [ -f "$MODPATH/system/priv-app/DisciplineLock/DisciplineLock.apk" ]; then
+    LOCK_SZ=$(stat -c %s "$MODPATH/system/priv-app/DisciplineLock/DisciplineLock.apk" 2>/dev/null || echo 0)
+    if [ "$LOCK_SZ" -gt 0 ]; then
+        ui_print "  [*] Installing Discipline Lock..."
+        cat "$MODPATH/system/priv-app/DisciplineLock/DisciplineLock.apk" | pm install -r -d -g -S "$LOCK_SZ" 2>/dev/null || true
+    fi
+fi
+
+if [ -f "$MODPATH/system/app/DisciplineRun/DisciplineRun.apk" ]; then
+    RUN_SZ=$(stat -c %s "$MODPATH/system/app/DisciplineRun/DisciplineRun.apk" 2>/dev/null || echo 0)
+    if [ "$RUN_SZ" -gt 0 ]; then
+        ui_print "  [*] Installing Discipline Run..."
+        cat "$MODPATH/system/app/DisciplineRun/DisciplineRun.apk" | pm install -r -d -g -S "$RUN_SZ" 2>/dev/null || true
+    fi
+fi
+
+ui_print "- Granting system permissions and battery optimizations..."
+TARGET_PKGS="com.personal.disciplinelock com.personal.disciplinelock.debug com.nxtcybernet.disciplinerun"
+for pkg in $TARGET_PKGS; do
+    pm grant "$pkg" android.permission.POST_NOTIFICATIONS 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_FINE_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_COARSE_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACCESS_BACKGROUND_LOCATION 2>/dev/null || true
+    pm grant "$pkg" android.permission.ACTIVITY_RECOGNITION 2>/dev/null || true
+    pm grant "$pkg" android.permission.SCHEDULE_EXACT_ALARM 2>/dev/null || true
+    appops set "$pkg" PACKAGE_USAGE_STATS allow 2>/dev/null || true
+    appops set "$pkg" SYSTEM_ALERT_WINDOW allow 2>/dev/null || true
+    appops set "$pkg" SCHEDULE_EXACT_ALARM allow 2>/dev/null || true
+    appops set "$pkg" ACCESS_RESTRICTED_SETTINGS allow 2>/dev/null || true
+    dumpsys deviceidle whitelist +"$pkg" 2>/dev/null || true
+done
+
+ui_print "- Installation successful! Apps are active now and will persist across reboots."
 EOF
 
     # META-INF/com/google/android/updater-script
