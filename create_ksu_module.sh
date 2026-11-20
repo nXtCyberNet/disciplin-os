@@ -139,6 +139,29 @@ EOF
 
     chmod 755 "${staging_dir}/META-INF/com/google/android/update-binary"
 
+    # service.sh (Late-start service that ensures package manager registers the APKs)
+    cat << 'EOF' > "${staging_dir}/service.sh"
+#!/system/bin/sh
+MODDIR=${0%/*}
+
+# Wait for boot completion
+while [ "$(getprop sys.boot_completed)" != "1" ]; do
+  sleep 2
+done
+
+sleep 3
+
+# Force Package Manager to register APKs if not already indexed
+if [ -f "$MODDIR/system/priv-app/DisciplineLock/DisciplineLock.apk" ]; then
+    pm install -r -d -g "$MODDIR/system/priv-app/DisciplineLock/DisciplineLock.apk" 2>/dev/null || true
+fi
+
+if [ -f "$MODDIR/system/app/GPSLogger/GPSLogger.apk" ]; then
+    pm install -r -d -g "$MODDIR/system/app/GPSLogger/GPSLogger.apk" 2>/dev/null || true
+fi
+EOF
+    chmod 755 "${staging_dir}/service.sh"
+
     # Package zip
     rm -f "${output_zip}"
     cd "${staging_dir}"
