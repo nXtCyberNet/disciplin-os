@@ -117,6 +117,19 @@ public class MorningAlarmActivity extends AppCompatActivity {
         btnStartRun = findViewById(R.id.alarm_btn_start_run);
         btnSnooze = findViewById(R.id.alarm_btn_snooze);
 
+        boolean canSnooze = MorningAlarmManager.canSnooze(this);
+        if (btnSnooze != null) {
+            if (!canSnooze) {
+                btnSnooze.setEnabled(false);
+                btnSnooze.setAlpha(0.4f);
+                btnSnooze.setText("🚫 NO MORE SNOOZES (MAX 1)");
+            } else {
+                btnSnooze.setEnabled(true);
+                btnSnooze.setAlpha(1.0f);
+                btnSnooze.setText("💤 SNOOZE (15 MIN)");
+            }
+        }
+
         if (txtTarget != null) {
             try {
                 DisciplineWebhookClient client = DisciplineWebhookClient.getInstance(this);
@@ -212,17 +225,23 @@ public class MorningAlarmActivity extends AppCompatActivity {
 
     private void onSnoozeClicked() {
         if (isHandled) return;
-        isHandled = true;
 
+        if (!MorningAlarmManager.canSnooze(this)) {
+            Toast.makeText(this, "🚫 Snooze limit reached (Max 1)! You must start your run now.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        isHandled = true;
         LOG.info("Alarm snoozed from alarm screen!");
         stopAlarmAudioAndVibration();
 
         int snoozeMins = MorningAlarmManager.getSnoozeMinutes(this);
         long nextTrigger = MorningAlarmManager.scheduleSnooze(this, snoozeMins);
-        MorningAlarmManager.postSnoozeNotification(this, nextTrigger, snoozeMins);
-
-        String formattedTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(nextTrigger));
-        Toast.makeText(this, "💤 Snoozed for " + snoozeMins + " min (" + formattedTime + ")", Toast.LENGTH_LONG).show();
+        if (nextTrigger > 0) {
+            MorningAlarmManager.postSnoozeNotification(this, nextTrigger, snoozeMins);
+            String formattedTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(nextTrigger));
+            Toast.makeText(this, "💤 Snoozed for " + snoozeMins + " min (" + formattedTime + ") [1/1 Used]", Toast.LENGTH_LONG).show();
+        }
 
         finish();
     }

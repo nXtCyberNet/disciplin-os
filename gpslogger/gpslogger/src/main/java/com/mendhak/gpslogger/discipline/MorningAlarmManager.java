@@ -53,6 +53,8 @@ public class MorningAlarmManager {
     public static final String PREF_NEXT_TRIGGER_MS = "discipline_morning_next_trigger_ms";
     public static final String PREF_ALARM_MUTED = "discipline_morning_alarm_muted";
     public static final String PREF_STATIONARY_GRACE_SEC = "discipline_morning_stationary_grace_sec";
+    public static final String PREF_SNOOZE_COUNT = "discipline_morning_snooze_count";
+    public static final int MAX_SNOOZE_COUNT = 1;
 
     public static final int DEFAULT_HOUR = 6;
     public static final int DEFAULT_MINUTE = 0;
@@ -258,10 +260,34 @@ public class MorningAlarmManager {
         setAlarmExact(context, triggerAtMs);
     }
 
+    public static int getSnoozeCount(Context context) {
+        return getPrefs(context).getInt(PREF_SNOOZE_COUNT, 0);
+    }
+
+    public static void incrementSnoozeCount(Context context) {
+        int count = getSnoozeCount(context);
+        getPrefs(context).edit().putInt(PREF_SNOOZE_COUNT, count + 1).apply();
+        LOG.info("Snooze count incremented to " + (count + 1) + "/" + MAX_SNOOZE_COUNT);
+    }
+
+    public static void resetSnoozeCount(Context context) {
+        getPrefs(context).edit().putInt(PREF_SNOOZE_COUNT, 0).apply();
+        LOG.info("Morning Alarm snooze count reset to 0.");
+    }
+
+    public static boolean canSnooze(Context context) {
+        return getSnoozeCount(context) < MAX_SNOOZE_COUNT;
+    }
+
     public static long scheduleSnooze(Context context, int minutes) {
+        if (!canSnooze(context)) {
+            LOG.warn("Cannot snooze: Maximum snooze limit (" + MAX_SNOOZE_COUNT + ") reached!");
+            return -1L;
+        }
+        incrementSnoozeCount(context);
         long triggerAtMs = System.currentTimeMillis() + (minutes * 60 * 1000L);
-        setAlarmExact(context, triggerAtMs);
-        LOG.info("Alarm snoozed for " + minutes + " minutes until " + new Date(triggerAtMs));
+        setAlarmExact(context, triggerAtMs, true);
+        LOG.info("Alarm snoozed (" + getSnoozeCount(context) + "/" + MAX_SNOOZE_COUNT + " used) for " + minutes + " minutes until " + new Date(triggerAtMs));
         return triggerAtMs;
     }
 
@@ -314,6 +340,10 @@ public class MorningAlarmManager {
     }
 
     private static void setAlarmExact(Context context, long triggerAtMs) {
+        setAlarmExact(context, triggerAtMs, false);
+    }
+
+    private static void setAlarmExact(Context context, long triggerAtMs, boolean isSnooze) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (am == null) return;
 
@@ -321,6 +351,7 @@ public class MorningAlarmManager {
 
         Intent intent = new Intent(context, MorningAlarmReceiver.class);
         intent.setAction(MorningAlarmReceiver.ACTION_TRIGGER_ALARM);
+        intent.putExtra(MorningAlarmReceiver.EXTRA_FROM_SNOOZE, isSnooze);
 
         PendingIntent pi = PendingIntent.getBroadcast(
                 context,
@@ -556,6 +587,7 @@ public class MorningAlarmManager {
 
         if (distanceMet && paceMet) {
             stopSirenSound();
+            resetSnoozeCount(context);
             currentState = AlarmState.COMPLETED;
             voiceCoach.announceMissionCompleted(finalDistanceMeters, avgPaceMinPerKm);
             notifyStateChanged("✅ Mission Accomplished! Alarm Disarmed!");

@@ -64,7 +64,9 @@ class DisciplineModeManager(
     private val context: Context,
     private val mathEngineManager: MathEngineManager,
     private val habitTaskManager: HabitTaskManager,
-    private val emergencySessionManager: EmergencySessionManager
+    private val emergencySessionManager: EmergencySessionManager,
+    private val rootController: com.personal.disciplinelock.system.RootController? = null,
+    private val appsWhitelistManager: com.personal.disciplinelock.domain.whitelist.AppsWhitelistManager? = null
 ) {
 
     companion object {
@@ -79,6 +81,7 @@ class DisciplineModeManager(
     private val securePreferences = com.personal.disciplinelock.data.SecurePreferences(context)
     private val prefs = context.getSharedPreferences("discipline_test_mode_prefs", Context.MODE_PRIVATE)
     private var testModeOverride: DisciplineMode? = null
+    private var lastAppliedMode: DisciplineMode? = null
 
     init {
         val savedMode = prefs.getString("test_mode_override", DisciplineMode.NORMAL_PHONE.name)
@@ -209,6 +212,76 @@ class DisciplineModeManager(
             statusSummary = finalSummary,
             overallStreak = obligations.overallStreak
         )
+
+        if (finalMode != lastAppliedMode) {
+            lastAppliedMode = finalMode
+            applyAppFreezingForMode(finalMode)
+        }
+    }
+
+    private fun applyAppFreezingForMode(targetMode: DisciplineMode) {
+        scope.launch(Dispatchers.IO) {
+            val root = rootController ?: return@launch
+            val whitelistManager = appsWhitelistManager ?: return@launch
+            if (!securePreferences.isRootFreezingEnabled) {
+                Log.d(TAG, "Root app freezing is disabled in preferences.")
+                return@launch
+            }
+            if (!root.isRootAccessGranted()) {
+                Log.w(TAG, "Root access not granted. Cannot freeze apps.")
+                return@launch
+            }
+
+            try {
+                // Refresh list of installed launcher apps if empty
+                if (whitelistManager.installedApps.value.isEmpty()) {
+                    whitelistManager.refreshInstalledApps()
+                }
+
+                when (targetMode) {
+                    DisciplineMode.DISCIPLINED_PHONE -> {
+                        val whitelisted = whitelistManager.whitelistedPackages.value
+                        val appsToSuspend = whitelistManager.installedApps.value
+                            .map { it.packageName }
+                            .filter { pkg ->
+                                !whitelisted.contains(pkg) &&
+                                pkg != context.packageName &&
+                                !isSystemCriticalPackage(pkg)
+                            }
+                        if (appsToSuspend.isNotEmpty()) {
+                            Log.i(TAG, "Disciplined Mode: Suspending ${appsToSuspend.size} non-whitelisted apps via root.")
+                            root.suspendPackages(appsToSuspend)
+                        }
+                    }
+                    DisciplineMode.NORMAL_PHONE, DisciplineMode.EMERGENCY_OVERRIDE -> {
+                        val allApps = whitelistManager.installedApps.value
+                            .map { it.packageName }
+                            .filter { !isSystemCriticalPackage(it) }
+                        if (allApps.isNotEmpty()) {
+                            Log.i(TAG, "Normal Mode: Unsuspending ${allApps.size} apps via root.")
+                            root.unsuspendPackages(allApps)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error applying app freezing for mode $targetMode", e)
+            }
+        }
+    }
+
+    private fun isSystemCriticalPackage(pkg: String): Boolean {
+        return pkg == "android" ||
+               pkg == "com.android.systemui" ||
+               pkg == "com.android.settings" ||
+               pkg == "com.android.phone" ||
+               pkg == "com.android.server.telecom" ||
+               pkg.contains("launcher") ||
+               pkg.contains("inputmethod") ||
+               pkg.contains("emergency") ||
+               pkg.contains("google.android.gms") ||
+               pkg.contains("google.android.gsf") ||
+               pkg.contains("google.android.dialer") ||
+               pkg.contains("mendhak.gpslogger")
     }
 
     fun toggleTestMode(): DisciplineMode {

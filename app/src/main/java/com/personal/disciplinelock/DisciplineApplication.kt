@@ -57,6 +57,7 @@ class DisciplineApplication : Application() {
 
         securePreferences = SecurePreferences(this)
         appsWhitelistManager = com.personal.disciplinelock.domain.whitelist.AppsWhitelistManager(this, securePreferences)
+        rootController = RootController(this)
         watchdogManager = WatchdogManager(this)
         emergencySessionManager = EmergencySessionManager(this)
         safetyManager = SafetyManager(this)
@@ -66,12 +67,14 @@ class DisciplineApplication : Application() {
         habitTaskDbHelper = HabitTaskDatabaseHelper(this)
         habitTaskManager = HabitTaskManager(habitTaskDbHelper)
 
-        // Initialize Central Discipline Mode Manager (Math + Habits + Tasks)
+        // Initialize Central Discipline Mode Manager (Math + Habits + Tasks + Root Freezing)
         disciplineModeManager = DisciplineModeManager(
             context = this,
             mathEngineManager = mathEngineManager,
             habitTaskManager = habitTaskManager,
-            emergencySessionManager = emergencySessionManager
+            emergencySessionManager = emergencySessionManager,
+            rootController = rootController,
+            appsWhitelistManager = appsWhitelistManager
         )
 
         // Initialize Outbound API Verification Engine & Inbound Local Webhook Server
@@ -125,9 +128,6 @@ class DisciplineApplication : Application() {
             }
         )
         localWebhookServer.start()
-
-        // Initialize Root Controller
-        rootController = RootController(this)
 
         // Initialize Daily Reset Cycle Manager
         dailyResetManager = DailyResetManager(
