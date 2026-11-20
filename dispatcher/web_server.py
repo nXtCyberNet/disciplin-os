@@ -391,7 +391,7 @@ DASHBOARD_HTML = """<!DOCTYPE html>
         renderLogs(data.logs || []);
         
         // Missions
-        renderMissions(data.missions || []);
+        renderMissions(data.missions || [], data.phone_connected);
 
         // Cached Targets
         renderCache(data.mission_cache || {});
@@ -415,10 +415,14 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       }
     }
 
-    function renderMissions(missions) {
+    function renderMissions(missions, isConnected) {
       const container = document.getElementById('missions-list');
       if (!missions || missions.length === 0) {
-        container.innerHTML = '<div style="font-size: 12px; color: var(--text-muted);">No missions found or phone not reachable. Check phone webhook server.</div>';
+        if (isConnected) {
+          container.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px 0;">⚡ Phone connected! No required missions currently active. Add a mission below.</div>';
+        } else {
+          container.innerHTML = '<div style="font-size: 12px; color: var(--warning); padding: 8px 0;">⚠️ Phone unreachable. Check Tailscale connection or phone IP.</div>';
+        }
         return;
       }
       container.innerHTML = missions.map(m => `
@@ -791,7 +795,7 @@ class DispatcherHttpHandler(BaseHTTPRequestHandler):
             cj, cj_source = get_cookie_jar()
             res_data = {
                 "phone_connected": phone_status.get("connected", False),
-                "phone_url": self.dispatcher.config.get("phone_url"),
+                "phone_url": phone_status.get("phone_url") or self.dispatcher.config.get("phone_url"),
                 "poll_interval_seconds": self.dispatcher.config.get("poll_interval_seconds", 300),
                 "rules": self.dispatcher.config.get("rules", []),
                 "missions": missions,
@@ -810,6 +814,11 @@ class DispatcherHttpHandler(BaseHTTPRequestHandler):
                 }
             }
             self.send_json(res_data)
+            return
+
+        if url_path == "/api/missions":
+            missions = self.dispatcher.fetch_phone_missions()
+            self.send_json({"missions": missions, "status": "ok"})
             return
 
         self.send_error(404, "Not Found")

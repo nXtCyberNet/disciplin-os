@@ -169,31 +169,33 @@ class MissionDispatcher:
         return False, last_err
 
     def add_phone_mission(self, title: str) -> tuple[bool, str]:
-        phone_url = self.config.get("phone_url", "http://127.0.0.1:8080").rstrip("/")
-        url = f"{phone_url}/webhook/mission/add"
         payload = json.dumps({"title": title.strip()}).encode("utf-8")
-
-        try:
-            req = urllib.request.Request(
-                url,
-                data=payload,
-                headers={"Content-Type": "application/json", "User-Agent": "DisciplineDispatcher/1.0"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, timeout=6) as resp:
-                res_body = resp.read().decode("utf-8")
-                res_json = json.loads(res_body)
-                if res_json.get("status") == "success":
-                    added_title = res_json.get("title", title)
-                    self.add_log("MISSION_ADD", f"Created new required mission on phone: '{added_title}'", True)
-                    return True, added_title
-                else:
-                    msg = res_json.get("message", "Failed to add mission on phone")
-                    self.add_log("MISSION_ADD", f"Failed to add '{title}': {msg}", False)
-                    return False, msg
-        except Exception as e:
-            self.add_log("ERROR", f"Error adding mission to phone at {url}: {e}", False)
-            return False, str(e)
+        last_err = ""
+        for phone_url in self.get_candidate_phone_urls():
+            url = f"{phone_url}/webhook/mission/add"
+            try:
+                req = urllib.request.Request(
+                    url,
+                    data=payload,
+                    headers={"Content-Type": "application/json", "User-Agent": "DisciplineDispatcher/1.0"},
+                    method="POST"
+                )
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    res_body = resp.read().decode("utf-8")
+                    res_json = json.loads(res_body)
+                    if res_json.get("status") == "success":
+                        added_title = res_json.get("title", title)
+                        self.add_log("MISSION_ADD", f"Created new required mission on phone: '{added_title}' via {phone_url}", True)
+                        return True, added_title
+                    else:
+                        msg = res_json.get("message", "Failed to add mission on phone")
+                        self.add_log("MISSION_ADD", f"Failed to add '{title}': {msg}", False)
+                        return False, msg
+            except Exception as e:
+                last_err = str(e)
+                continue
+        self.add_log("ERROR", f"Error adding mission to phone: {last_err}", False)
+        return False, last_err
 
     def evaluate_rules(self) -> list[dict]:
         self.check_daily_reset()

@@ -1,5 +1,5 @@
 {
-  "phone_url": "http://127.0.0.1:8080",
+  "phone_url": "http://100.76.223.105:8080",
   "github_user": "nXtCyberNet",
   "poll_interval_seconds": 300,
   "llm": {
