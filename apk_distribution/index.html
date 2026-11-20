@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DisciplineOS & GPSLogger Installer</title>
+  <style>
+    :root {
+      --bg: #0B111E;
+      --card-bg: #151D2F;
+      --border: #26354D;
+      --cyan: #00E5FF;
+      --green: #00E676;
+      --accent: #1976D2;
+      --text: #F0F4F8;
+      --text-muted: #8E9BAE;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 16px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+    .container { max-width: 480px; width: 100%; }
+    .header { text-align: center; margin-bottom: 24px; padding-top: 10px; }
+    .logo-badge { display: inline-block; background: rgba(0, 229, 255, 0.1); border: 1px solid var(--cyan); color: var(--cyan); font-weight: 800; font-size: 11px; letter-spacing: 1.5px; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; margin-bottom: 12px; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
+    .subtitle { color: var(--text-muted); font-size: 14px; }
+    
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .app-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+    .icon-lock { background: linear-gradient(135deg, #1565C0, #0D47A1); color: #fff; }
+    .icon-gps { background: linear-gradient(135deg, #2E7D32, #1B5E20); color: #fff; }
+    .app-title { font-size: 18px; font-weight: 700; color: #fff; }
+    .app-meta { font-size: 12px; color: var(--text-muted); }
+    
+    .btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 16px; border-radius: 12px; font-weight: 700; font-size: 15px; text-decoration: none; transition: transform 0.1s, opacity 0.2s; cursor: pointer; border: none; }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: linear-gradient(135deg, #00E5FF, #00B0FF); color: #050B14; margin-top: 10px; }
+    .btn-green { background: linear-gradient(135deg, #00E676, #00C853); color: #050B14; margin-top: 10px; }
+    
+    .feature-list { list-style: none; margin: 12px 0 6px 0; font-size: 13px; color: var(--text-muted); }
+    .feature-list li { margin-bottom: 6px; display: flex; align-items: flex-start; gap: 6px; }
+    .feature-list li::before { content: "✓"; color: var(--green); font-weight: bold; }
+    
+    .install-guide { background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border); border-radius: 14px; padding: 16px; margin-top: 10px; }
+    .install-guide h3 { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--cyan); }
+    .install-guide ol { padding-left: 20px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+    .install-guide ol li { margin-bottom: 4px; }
+    
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; background: rgba(0, 230, 118, 0.15); color: var(--green); }
+    .footer { text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 24px; padding-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo-badge">Direct Phone Installer</div>
+      <h1>DisciplineOS & GPSLogger</h1>
+      <p class="subtitle">Install the latest builds with live GPS coordinates, dark road map, and telemetry loopback.</p>
+    </div>
+
+    <!-- App 1: Discipline Lock -->
+    <div class="card">
+      <div class="card-header">
+        <div class="app-icon icon-lock">🔒</div>
+        <div>
+          <div class="app-title">Discipline Lock <span class="badge">v1.0 Debug</span></div>
+          <div class="app-meta">61 MB • Universal (arm64, arm, x86_64)</div>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li>Auto GPS coordinate detection & "📍 Use Current GPS Location" button</li>
+        <li>Safe Zones configuration with unrestricted live adding</li>
+        <li>Local loopback webhook engine listening on port 8080</li>
+        <li>Monk mode app blocking with accessibility service protection</li>
+      </ul>
+      <a href="discipline-lock.apk" class="btn btn-primary" download>
+        📥 Download Discipline Lock APK
+      </a>
+    </div>
+
+    <!-- App 2: GPSLogger Discipline HUD -->
+    <div class="card">
+      <div class="card-header">
+        <div class="app-icon icon-gps">🏃</div>
+        <div>
+          <div class="app-title">GPSLogger Discipline HUD <span class="badge">v1.0 Debug</span></div>
+          <div class="app-meta">20 MB • Universal (arm64, arm, x86_64)</div>
+        </div>
+      </div>
+      <ul class="feature-list">
+        <li>Real Dark Road Map with live GPS radar beacon & heading arrow</li>
+        <li>Pre-workout satellite fix & coordinate badge (28.63260°N, 77.22150°E)</li>
+        <li>Auto-launch handoff with target distance & pace enforcement</li>
+        <li>Splits calculator & port 8080 run telemetry streamer</li>
+      </ul>
+      <a href="gpslogger-discipline.apk" class="btn btn-green" download>
+        📥 Download GPSLogger HUD APK
+      </a>
+    </div>
+
+    <!-- Installation Steps -->
+    <div class="install-guide">
+      <h3>📲 Installation Instructions on Android</h3>
+      <ol>
+        <li>Tap the download buttons above to download both APKs.</li>
+        <li>When prompted by your browser (e.g. Chrome), tap <strong>"Download anyway"</strong>.</li>
+        <li>Open the downloaded APK and tap <strong>"Install"</strong> (allow "Install unknown apps" for your browser if prompted).</li>
+        <li>Grant <strong>Location (Allow all the time)</strong> to GPSLogger for background outdoor logging.</li>
+        <li>Open Discipline Lock and grant <strong>Accessibility Service</strong> when prompted to enable focus gate lock protection.</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      DisciplineOS • Local Machine Distribution (Port 8888)
+    </div>
+  </div>
+</body>
+</html>

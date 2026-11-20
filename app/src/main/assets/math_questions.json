@@ -1,0 +1,504 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "question": "What is the value of 17 × 14 - 15 × 8?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "118",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "17 × 14 = 238, 15 × 8 = 120. 238 - 120 = 118."
+    },
+    {
+      "id": 2,
+      "question": "Solve for x: 3x + 15 = 48",
+      "answerType": "MCQ",
+      "correctAnswer": "11",
+      "options": ["9", "11", "13", "15"],
+      "difficulty": "EASY",
+      "category": "algebra",
+      "explanation": "3x = 48 - 15 = 33, so x = 33 / 3 = 11."
+    },
+    {
+      "id": 3,
+      "question": "What is 25% of 360 plus 15% of 200?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "120",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "25% of 360 = 90. 15% of 200 = 30. 90 + 30 = 120."
+    },
+    {
+      "id": 4,
+      "question": "What is the square root of 576?",
+      "answerType": "MCQ",
+      "correctAnswer": "24",
+      "options": ["22", "24", "26", "28"],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "24 × 24 = 576."
+    },
+    {
+      "id": 5,
+      "question": "If a triangle has angles 45° and 65°, what is the third angle in degrees?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "70",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "geometry",
+      "explanation": "180 - (45 + 65) = 180 - 110 = 70°."
+    },
+    {
+      "id": 6,
+      "question": "What is the greatest common divisor (GCD) of 48 and 72?",
+      "answerType": "MCQ",
+      "correctAnswer": "24",
+      "options": ["12", "18", "24", "36"],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "48 = 24 × 2, 72 = 24 × 3. The greatest common divisor is 24."
+    },
+    {
+      "id": 7,
+      "question": "Compute: (12² - 8²) / 5",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "16",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "144 - 64 = 80. 80 / 5 = 16."
+    },
+    {
+      "id": 8,
+      "question": "In how many ways can 4 books be arranged on a shelf?",
+      "answerType": "MCQ",
+      "correctAnswer": "24",
+      "options": ["12", "16", "24", "32"],
+      "difficulty": "EASY",
+      "category": "combinatorics",
+      "explanation": "4! = 4 × 3 × 2 × 1 = 24."
+    },
+    {
+      "id": 9,
+      "question": "What is the median of the numbers: 7, 2, 9, 4, 11, 8, 3?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "7",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "statistics",
+      "explanation": "Sorted list: 2, 3, 4, 7, 8, 9, 11. The middle element (4th of 7) is 7."
+    },
+    {
+      "id": 10,
+      "question": "If 5 machines make 5 widgets in 5 minutes, how many minutes do 100 machines need to make 100 widgets?",
+      "answerType": "MCQ",
+      "correctAnswer": "5",
+      "options": ["5", "20", "50", "100"],
+      "difficulty": "MEDIUM",
+      "category": "logic",
+      "explanation": "Each machine takes 5 minutes to make 1 widget. So 100 machines make 100 widgets in 5 minutes."
+    },
+    {
+      "id": 11,
+      "question": "What is 15 × 16 - 13 × 12?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "84",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "arithmetic",
+      "explanation": "15 × 16 = 240, 13 × 12 = 156. 240 - 156 = 84."
+    },
+    {
+      "id": 12,
+      "question": "How many two-digit prime numbers are there between 20 and 40?",
+      "answerType": "MCQ",
+      "correctAnswer": "4",
+      "options": ["3", "4", "5", "6"],
+      "difficulty": "MEDIUM",
+      "category": "number_theory",
+      "explanation": "The primes between 20 and 40 are 23, 29, 31, and 37 (total of 4)."
+    },
+    {
+      "id": 13,
+      "question": "Compute the hypotenuse of a right-angled triangle with legs of length 9 and 12.",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "15",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "geometry",
+      "explanation": "√(9² + 12²) = √(81 + 144) = √225 = 15."
+    },
+    {
+      "id": 14,
+      "question": "From a group of 8 people, how many distinct 3-person committees can be formed?",
+      "answerType": "MCQ",
+      "correctAnswer": "56",
+      "options": ["24", "48", "56", "112"],
+      "difficulty": "MEDIUM",
+      "category": "combinatorics",
+      "explanation": "C(8, 3) = (8 × 7 × 6) / (3 × 2 × 1) = 56."
+    },
+    {
+      "id": 15,
+      "question": "What is the remainder when 2^10 is divided by 7?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "2",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "number_theory",
+      "explanation": "2^10 = 1024. 1024 = 7 × 146 + 2. Remainder is 2. (Also 2³ ≡ 1 mod 7, so 2^10 = (2³)³ × 2 ≡ 2)."
+    },
+    {
+      "id": 16,
+      "question": "If log₁₀(x) = 3, what is the value of x?",
+      "answerType": "MCQ",
+      "correctAnswer": "1000",
+      "options": ["30", "100", "300", "1000"],
+      "difficulty": "EASY",
+      "category": "algebra",
+      "explanation": "x = 10³ = 1000."
+    },
+    {
+      "id": 17,
+      "question": "A car travels 180 km in 2.5 hours. What is its average speed in km/h?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "72",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "180 / 2.5 = 72 km/h."
+    },
+    {
+      "id": 18,
+      "question": "What is the sum of interior angles of a hexagon (in degrees)?",
+      "answerType": "MCQ",
+      "correctAnswer": "720",
+      "options": ["540", "720", "900", "1080"],
+      "difficulty": "MEDIUM",
+      "category": "geometry",
+      "explanation": "(n - 2) × 180° = (6 - 2) × 180° = 4 × 180° = 720°."
+    },
+    {
+      "id": 19,
+      "question": "What is 23 × 19?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "437",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "arithmetic",
+      "explanation": "23 × 20 - 23 = 460 - 23 = 437."
+    },
+    {
+      "id": 20,
+      "question": "Two standard dice are rolled. What is the probability of rolling a sum of 7?",
+      "answerType": "MCQ",
+      "correctAnswer": "1/6",
+      "options": ["1/6", "1/8", "1/12", "7/36"],
+      "difficulty": "MEDIUM",
+      "category": "probability",
+      "explanation": "Outcomes summing to 7: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1) = 6 out of 36 = 1/6."
+    },
+    {
+      "id": 21,
+      "question": "If x² - 9x + 20 = 0, what is the larger root of the equation?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "5",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "algebra",
+      "explanation": "(x - 4)(x - 5) = 0. Roots are 4 and 5. The larger root is 5."
+    },
+    {
+      "id": 22,
+      "question": "What is the area of a circle with diameter 14? (Use π ≈ 22/7)",
+      "answerType": "MCQ",
+      "correctAnswer": "154",
+      "options": ["88", "144", "154", "616"],
+      "difficulty": "MEDIUM",
+      "category": "geometry",
+      "explanation": "Radius = 7. Area = (22/7) × 7² = 22 × 7 = 154."
+    },
+    {
+      "id": 23,
+      "question": "Compute: 2³ + 3³ + 4³",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "99",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "8 + 27 + 64 = 99."
+    },
+    {
+      "id": 24,
+      "question": "How many distinct anagrams can be formed using all letters of 'LEVEL'?",
+      "answerType": "MCQ",
+      "correctAnswer": "30",
+      "options": ["20", "30", "60", "120"],
+      "difficulty": "HARD",
+      "category": "combinatorics",
+      "explanation": "5 letters with 2 L's and 2 E's: 5! / (2! × 2!) = 120 / 4 = 30."
+    },
+    {
+      "id": 25,
+      "question": "What is the sum of the first 20 positive integers (1 + 2 + ... + 20)?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "210",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "n(n+1)/2 = 20 × 21 / 2 = 210."
+    },
+    {
+      "id": 26,
+      "question": "If f(x) = 3x² - 5x + 2, what is f(4)?",
+      "answerType": "MCQ",
+      "correctAnswer": "30",
+      "options": ["26", "28", "30", "34"],
+      "difficulty": "MEDIUM",
+      "category": "algebra",
+      "explanation": "f(4) = 3(16) - 5(4) + 2 = 48 - 20 + 2 = 30."
+    },
+    {
+      "id": 27,
+      "question": "What is the value of 35% of 400 minus 20% of 250?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "90",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "35% of 400 = 140. 20% of 250 = 50. 140 - 50 = 90."
+    },
+    {
+      "id": 28,
+      "question": "A bag contains 5 red, 4 blue, and 3 green marbles. What is the probability of drawing a blue marble?",
+      "answerType": "MCQ",
+      "correctAnswer": "1/3",
+      "options": ["1/4", "1/3", "4/9", "5/12"],
+      "difficulty": "EASY",
+      "category": "probability",
+      "explanation": "Total = 5 + 4 + 3 = 12. Probability = 4 / 12 = 1/3."
+    },
+    {
+      "id": 29,
+      "question": "Compute: 2⁹ / 2⁴",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "32",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "2^(9-4) = 2⁵ = 32."
+    },
+    {
+      "id": 30,
+      "question": "What is the perimeter of a rectangle with length 18 and diagonal 30?",
+      "answerType": "MCQ",
+      "correctAnswer": "84",
+      "options": ["68", "72", "84", "96"],
+      "difficulty": "HARD",
+      "category": "geometry",
+      "explanation": "Width = √(30² - 18²) = √(900 - 324) = √576 = 24. Perimeter = 2(18 + 24) = 84."
+    },
+    {
+      "id": 31,
+      "question": "If 7 workers can build a wall in 12 days, how many days will 4 workers take at the same rate?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "21",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "arithmetic",
+      "explanation": "Total worker-days = 7 × 12 = 84. For 4 workers: 84 / 4 = 21 days."
+    },
+    {
+      "id": 32,
+      "question": "What is the slope of the line passing through points (2, 3) and (6, 11)?",
+      "answerType": "MCQ",
+      "correctAnswer": "2",
+      "options": ["1.5", "2", "2.5", "3"],
+      "difficulty": "EASY",
+      "category": "algebra",
+      "explanation": "m = (11 - 3) / (6 - 2) = 8 / 4 = 2."
+    },
+    {
+      "id": 33,
+      "question": "Compute: 11 × 11 + 12 × 12 + 13 × 13",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "434",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "arithmetic",
+      "explanation": "121 + 144 + 169 = 434."
+    },
+    {
+      "id": 34,
+      "question": "How many diagonals does a regular octagon have?",
+      "answerType": "MCQ",
+      "correctAnswer": "20",
+      "options": ["16", "20", "24", "28"],
+      "difficulty": "MEDIUM",
+      "category": "geometry",
+      "explanation": "n(n - 3) / 2 = 8 × 5 / 2 = 20."
+    },
+    {
+      "id": 35,
+      "question": "What is the smallest prime number greater than 50?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "53",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "number_theory",
+      "explanation": "51 = 3 × 17, 52 is even. 53 is prime."
+    },
+    {
+      "id": 36,
+      "question": "What is the value of 5! - 4! - 3!?",
+      "answerType": "MCQ",
+      "correctAnswer": "90",
+      "options": ["84", "90", "96", "102"],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "120 - 24 - 6 = 90."
+    },
+    {
+      "id": 37,
+      "question": "If 2^(2x) = 64, what is the value of x?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "3",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "algebra",
+      "explanation": "64 = 2⁶, so 2x = 6, x = 3."
+    },
+    {
+      "id": 38,
+      "question": "In how many ways can 5 runners finish in 1st, 2nd, and 3rd place (no ties)?",
+      "answerType": "MCQ",
+      "correctAnswer": "60",
+      "options": ["20", "60", "120", "125"],
+      "difficulty": "MEDIUM",
+      "category": "combinatorics",
+      "explanation": "P(5, 3) = 5 × 4 × 3 = 60."
+    },
+    {
+      "id": 39,
+      "question": "What is 1000 - 378 - 256?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "366",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "1000 - 634 = 366."
+    },
+    {
+      "id": 40,
+      "question": "What is the least common multiple (LCM) of 12, 15, and 20?",
+      "answerType": "MCQ",
+      "correctAnswer": "60",
+      "options": ["30", "60", "120", "180"],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "12 = 2² × 3, 15 = 3 × 5, 20 = 2² × 5. LCM = 2² × 3 × 5 = 60."
+    },
+    {
+      "id": 41,
+      "question": "Compute: (25 × 24) / 12 + 18",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "68",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "(25 × 2) + 18 = 50 + 18 = 68."
+    },
+    {
+      "id": 42,
+      "question": "If the mean of 5 numbers is 18, and four of them are 12, 15, 20, and 22, what is the fifth number?",
+      "answerType": "MCQ",
+      "correctAnswer": "21",
+      "options": ["19", "20", "21", "23"],
+      "difficulty": "MEDIUM",
+      "category": "statistics",
+      "explanation": "Total sum = 5 × 18 = 90. Given sum = 12 + 15 + 20 + 22 = 69. Fifth number = 90 - 69 = 21."
+    },
+    {
+      "id": 43,
+      "question": "What is 16² - 14²?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "60",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "(16 - 14)(16 + 14) = 2 × 30 = 60."
+    },
+    {
+      "id": 44,
+      "question": "What is the volume of a cube whose total surface area is 150?",
+      "answerType": "MCQ",
+      "correctAnswer": "125",
+      "options": ["100", "125", "150", "216"],
+      "difficulty": "MEDIUM",
+      "category": "geometry",
+      "explanation": "6s² = 150 → s² = 25 → s = 5. Volume = s³ = 125."
+    },
+    {
+      "id": 45,
+      "question": "Find the sum of all prime numbers less than 15.",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "41",
+      "options": [],
+      "difficulty": "MEDIUM",
+      "category": "number_theory",
+      "explanation": "Primes < 15: 2, 3, 5, 7, 11, 13. Sum = 2 + 3 + 5 + 7 + 11 + 13 = 41."
+    },
+    {
+      "id": 46,
+      "question": "A fair coin is flipped 4 times. What is the probability of getting exactly 2 heads?",
+      "answerType": "MCQ",
+      "correctAnswer": "3/8",
+      "options": ["1/4", "3/8", "1/2", "5/8"],
+      "difficulty": "MEDIUM",
+      "category": "probability",
+      "explanation": "C(4, 2) / 2⁴ = 6 / 16 = 3/8."
+    },
+    {
+      "id": 47,
+      "question": "Compute: (7 × 8 × 9) / (3 × 4)",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "42",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "504 / 12 = 42."
+    },
+    {
+      "id": 48,
+      "question": "If 3a + 2b = 24 and b = 3, what is the value of a?",
+      "answerType": "MCQ",
+      "correctAnswer": "6",
+      "options": ["4", "5", "6", "8"],
+      "difficulty": "EASY",
+      "category": "algebra",
+      "explanation": "3a + 6 = 24 → 3a = 18 → a = 6."
+    },
+    {
+      "id": 49,
+      "question": "What is the sum of the digits of 2^8?",
+      "answerType": "DIRECT_INPUT",
+      "correctAnswer": "13",
+      "options": [],
+      "difficulty": "EASY",
+      "category": "arithmetic",
+      "explanation": "2^8 = 256. 2 + 5 + 6 = 13."
+    },
+    {
+      "id": 50,
+      "question": "If a triangle has sides 7, 24, and 25, what type of triangle is it?",
+      "answerType": "MCQ",
+      "correctAnswer": "Right-angled",
+      "options": ["Acute", "Obtuse", "Right-angled", "Equilateral"],
+      "difficulty": "EASY",
+      "category": "geometry",
+      "explanation": "7² + 24² = 49 + 576 = 625 = 25². Since a² + b² = c², it is a right-angled triangle."
+    }
+  ]
+}

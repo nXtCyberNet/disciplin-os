@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/hud_bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Bar matching Image 1: HEALTH HUB / Outdoor running + ⚙️ Settings -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/hud_txt_app_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:text="HEALTH HUB"
+                    android:textColor="@color/hud_text_primary"
+                    android:textSize="20sp"
+                    android:letterSpacing="0.02" />
+
+                <TextView
+                    android:id="@+id/hud_txt_app_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:text="Outdoor running"
+                    android:textColor="@color/hud_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Discipline Server / Sync Pill -->
+            <LinearLayout
+                android:id="@+id/hud_pill_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/hud_pill_bg"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hud_txt_sync_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="@string/hud_status_checking"
+                    android:textColor="@color/hud_pill_text_checking"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- ⚙️ Settings Button -->
+            <ImageView
+                android:id="@+id/hud_btn_settings_gear"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Settings"
+                android:padding="4dp"
+                android:src="@drawable/circle_none" />
+        </LinearLayout>
+
+        <!-- Status & Satellite Row matching Image 1: [GPS READY] on left, satellites on right -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/hud_txt_gps_ready_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/hud_pill_gps_ready"
+                android:fontFamily="sans-serif-bold"
+                android:text="GPS READY"
+                android:textColor="#34D399"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/hud_txt_gps_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:text="6 satellites • ±5 m"
+                android:textColor="@color/hud_text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Morning Alarm Alert Card (Sleek, visible when configured/active) -->
+        <LinearLayout
+            android:id="@+id/hud_card_morning_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/hud_card_dark"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hud_txt_alarm_header"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="⏰ MORNING ALARM"
+                    android:textColor="#F78166"
+                    android:textSize="12sp" />
+
+                <!-- Ringtone Tune Selection Button -->
+                <Button
+                    android:id="@+id/hud_btn_alarm_tune"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@drawable/hud_mission_button"
+                    android:text="🎵 Tune"
+                    android:textColor="#38BDF8"
+                    android:textSize="10sp"
+                    android:minWidth="0dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:layout_marginEnd="4dp" />
+
+                <!-- Voice Coach Toggle -->
+                <Button
+                    android:id="@+id/hud_btn_voice_toggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:background="@drawable/hud_mission_button"
+                    android:text="🔊 Voice"
+                    android:textColor="@color/hud_text_primary"
+                    android:textSize="10sp"
+                    android:minWidth="0dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/hud_txt_alarm_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="⏰ Alarm set for 06:00 AM"
+                android:textColor="@color/hud_text_primary"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/hud_txt_alarm_substatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="sans-serif"
+                android:text="If pace does not match on finish, alarm will not stop and restarts!"
+                android:textColor="@color/hud_text_muted"
+                android:textSize="11sp" />
+
+            <!-- Alarm action buttons -->
+            <LinearLayout
+                android:id="@+id/hud_layout_alarm_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/hud_btn_alarm_snooze"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/hud_button_snooze"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="💤 SNOOZE (15M)"
+                    android:textColor="#FFFFFF"
+                    android:textSize="11sp" />
+
+                <Button
+                    android:id="@+id/hud_btn_alarm_test"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/hud_mission_button"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="⚡ TEST ALARM"
+                    android:textColor="#38BDF8"
+                    android:textSize="11sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ============================================================ -->
+        <!-- PRE-WORKOUT VIEW (Image 1): Workout Objective & Pre-Run Cards -->
+        <!-- ============================================================ -->
+        <LinearLayout
+            android:id="@+id/hud_layout_pre_workout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Centered Distance Target Section matching Image 1 -->
+            <LinearLayout
+                android:id="@+id/hud_row_target_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="DISTANCE TARGET"
+                    android:textColor="@color/hud_text_muted"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.08" />
+
+                <!-- 2.00 km -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hud_txt_target_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="2.00"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="44sp" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_target_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="km"
+                        android:textColor="#10B981"
+                        android:textSize="26sp" />
+                </LinearLayout>
+
+                <!-- Target pace below 6:00 /km -->
+                <TextView
+                    android:id="@+id/hud_txt_target_pace_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Target pace below 6:00 /km"
+                    android:textColor="@color/hud_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Last Pace & Last Distance Row matching Image 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <!-- Left Card: LAST PACE -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/hud_card_dark"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="LAST PACE"
+                        android:textColor="@color/hud_text_muted"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.06" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_last_pace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--:-- /km"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <!-- Right Card: LAST DISTANCE -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/hud_card_dark"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="LAST DISTANCE"
+                        android:textColor="@color/hud_text_muted"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.06" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_last_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="-- km"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Route Preview Card matching Image 1 -->
+            <LinearLayout
+                android:id="@+id/hud_card_route_preview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/hud_card_dark"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="ROUTE PREVIEW"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="13sp"
+                        android:letterSpacing="0.04" />
+
+                    <Button
+                        android:id="@+id/hud_btn_map_expand"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Expand ↗"
+                        android:textColor="#38BDF8"
+                        android:textSize="12sp"
+                        android:minWidth="0dp"
+                        android:padding="0dp" />
+                </LinearLayout>
+
+                <!-- Map Frame -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp">
+
+                    <com.mendhak.gpslogger.discipline.RouteMapView
+                        android:id="@+id/hud_map_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp" />
+
+                    <!-- Watermark -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|start"
+                        android:layout_margin="8dp"
+                        android:background="#99000000"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:fontFamily="sans-serif"
+                        android:text="therunplan.com"
+                        android:textColor="#94A3B8"
+                        android:textSize="10sp" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- START WORKOUT Button matching Image 1 -->
+            <Button
+                android:id="@+id/hud_btn_workout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/hud_button_green"
+                android:fontFamily="sans-serif-black"
+                android:text="START WORKOUT"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:letterSpacing="0.05" />
+
+            <!-- Bottom Links matching Image 1: Run history (left) | Discipline Lock ↗ (right) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/hud_btn_run_history_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Run history"
+                    android:textColor="#38BDF8"
+                    android:textSize="13sp"
+                    android:padding="4dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/hud_btn_return_discipline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Discipline Lock ↗"
+                    android:textColor="#38BDF8"
+                    android:textSize="13sp"
+                    android:padding="4dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ============================================================ -->
+        <!-- ACTIVE WORKOUT DASHBOARD: Pace Zones, Live Distance & Splits -->
+        <!-- ============================================================ -->
+        <LinearLayout
+            android:id="@+id/hud_layout_active_workout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Active Workout Header & Duration -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/hud_card_dark"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="🏃 OUTDOOR RUN ACTIVE"
+                        android:textColor="#34D399"
+                        android:textSize="13sp"
+                        android:letterSpacing="0.05" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_duration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="⏱ 00:00:00"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="22sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/hud_txt_auto_verified_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/hud_pill_gps_ready"
+                    android:fontFamily="sans-serif-bold"
+                    android:text="⚡ Auto-Verify ON"
+                    android:textColor="#10B981"
+                    android:textSize="10sp"
+                    android:padding="6dp" />
+            </LinearLayout>
+
+            <!-- Prominent Distance Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/hud_card_dark"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="DISTANCE"
+                    android:textColor="@color/hud_text_muted"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.08" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hud_txt_distance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="0.00"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="44sp" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_distance_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="KM"
+                        android:textColor="#10B981"
+                        android:textSize="24sp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/hud_txt_target_distance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="🎯 Target: 2.00 km (2.00 km left)"
+                    android:textColor="@color/hud_text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <!-- Pace Zones Card matching Feature 2 -->
+            <LinearLayout
+                android:id="@+id/hud_card_pace_zones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/hud_card_dark"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="PACE ZONES"
+                        android:textColor="@color/hud_text_muted"
+                        android:textSize="11sp"
+                        android:letterSpacing="0.06" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_target_pace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="🎯 Target: &lt; 6:00 /km"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Current Pace Display & Zone Badge -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/hud_txt_pace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="--:--"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="32sp" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_pace_min"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="sans-serif"
+                        android:text="/km"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="15sp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <!-- Live Pace Zone Badge -->
+                    <TextView
+                        android:id="@+id/hud_txt_pace_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/hud_pill_gps_ready"
+                        android:fontFamily="sans-serif-bold"
+                        android:text="⚪ Stopped"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="12sp"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp" />
+                </LinearLayout>
+
+                <!-- Pace Zone 3-segment visual meter -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <!-- Ahead / Fast zone -->
+                    <View
+                        android:id="@+id/hud_meter_ahead"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="2dp"
+                        android:background="#0284C7" />
+
+                    <!-- Within target zone -->
+                    <View
+                        android:id="@+id/hud_meter_within"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
+                        android:background="#10B981" />
+
+                    <!-- Below target / Slow zone -->
+                    <View
+                        android:id="@+id/hud_meter_slow"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_marginStart="2dp"
+                        android:background="#EF4444" />
+                </LinearLayout>
+
+                <!-- Zone labels below bar -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="⚡ Fast"
+                        android:textColor="#38BDF8"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="🟢 On Pace"
+                        android:textColor="#34D399"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="🔴 Slow"
+                        android:textColor="#F87171"
+                        android:textSize="10sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Speed & Cadence / Steps Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/hud_card_dark"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="SPEED"
+                        android:textColor="@color/hud_text_muted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.05" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_speed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="0.0 m/s"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_speed_kmh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="0.0 km/h"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/hud_card_dark"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="STEPS • CADENCE"
+                        android:textColor="@color/hud_text_muted"
+                        android:textSize="10sp"
+                        android:letterSpacing="0.05" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_steps"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:text="0"
+                        android:textColor="@color/hud_text_primary"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/hud_txt_cadence"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="0 spm"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Real-Time Kilometer Splits Card matching Feature 3 -->
+            <LinearLayout
+                android:id="@+id/hud_card_splits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/hud_card_dark"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="📊 KILOMETER SPLITS"
+                    android:textColor="@color/hud_text_muted"
+                    android:textSize="11sp"
+                    android:letterSpacing="0.06" />
+
+                <!-- Container for dynamically added splits -->
+                <LinearLayout
+                    android:id="@+id/hud_layout_splits_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/hud_txt_splits_empty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="First split will record automatically at 1.00 km"
+                        android:textColor="@color/hud_text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Finish Workout Button (Red) -->
+            <Button
+                android:id="@+id/hud_btn_workout_finish"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/hud_button_finish"
+                android:fontFamily="sans-serif-black"
+                android:text="FINISH WORKOUT"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:letterSpacing="0.05" />
+
+            <TextView
+                android:id="@+id/hud_txt_auto_verify_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:fontFamily="sans-serif"
+                android:text="✅ Workout automatically verifies upon reaching 2.00 km under target pace"
+                android:textColor="#34D399"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- Hidden legacy views referenced by code -->
+        <View
+            android:id="@+id/hud_row_target_pace"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/hud_btn_map_external"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/hud_btn_last_summary"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/hud_btn_mission_run"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/hud_btn_mission_mobility"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/hud_btn_mission_custom"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/hud_txt_mission_feedback"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,35 @@
+{
+  "phone_url": "http://127.0.0.1:8080",
+  "github_user": "nXtCyberNet",
+  "poll_interval_seconds": 300,
+  "llm": {
+    "enabled": true,
+    "endpoint": "https://ai.hackclub.com/proxy/v1/chat/completions",
+    "api_key": "",
+    "model": "google/gemini-4-hydrogen",
+    "fallback_models": [
+      "google/gemini-3.5-flash-lite",
+      "openai/gpt-4o-mini"
+    ]
+  },
+  "rules": [
+    {
+      "id": "github_pr_rule",
+      "name": "GitHub Pull Request Verification",
+      "type": "github_pr",
+      "enabled": true,
+      "repo": "",
+      "author": "nXtCyberNet",
+      "state": "open",
+      "must_be_today": true,
+      "target_mission": "auto"
+    },
+    {
+      "id": "youtube_watch_rule",
+      "name": "YouTube Educational Watch Verification",
+      "type": "youtube_watch",
+      "enabled": true,
+      "target_mission": "auto"
+    }
+  ]
+}

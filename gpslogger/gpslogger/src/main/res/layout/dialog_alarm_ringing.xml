@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/hud_card_dark"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Flashing / Alert Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/ringing_txt_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🚨"
+            android:textSize="54sp" />
+
+        <TextView
+            android:id="@+id/ringing_txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"
+            android:text="ALARM RINGING!"
+            android:textColor="#F87171"
+            android:textSize="22sp" />
+
+        <TextView
+            android:id="@+id/ringing_txt_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-black"
+            android:text="06:00 AM"
+            android:textColor="#FFFFFF"
+            android:textSize="32sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:text="Time to run! Put on your shoes."
+            android:textColor="#94A3B8"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Target Info Box -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/hud_pill_gps_ready"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/ringing_txt_target"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:text="🎯 TARGET: 2.00 km @ &lt; 6:00 /km"
+            android:textColor="#10B981"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:text="If target pace is not matched on finish, the alarm will not stop and restarts!"
+            android:textColor="#64748B"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <!-- Strict Discipline Notice -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:fontFamily="sans-serif-bold"
+        android:gravity="center"
+        android:text="🚫 NO WAY TO TURN ALARM OFF\nYou must complete your workout to disarm it."
+        android:textColor="#EF4444"
+        android:textSize="12sp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <!-- Start Workout Button (Green) -->
+        <Button
+            android:id="@+id/ringing_btn_start_workout"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/hud_button_green"
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"
+            android:text="🏃 START WORKOUT &amp; RUN"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- Snooze Button -->
+        <Button
+            android:id="@+id/ringing_btn_snooze"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/hud_button_snooze"
+            android:fontFamily="sans-serif-bold"
+            android:text="💤 SNOOZE (15 MIN)"
+            android:textColor="#60A5FA"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</LinearLayout>

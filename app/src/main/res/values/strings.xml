@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Discipline Lock</string>
+    <string name="device_admin_description">Device Owner administrator for Discipline Lock enforcement</string>
+    <string name="channel_service_name">Discipline Lock Service</string>
+    <string name="channel_service_desc">Persistent service maintaining task gate state and watchdog</string>
+    <string name="channel_watchdog_name">Safety Watchdog Alerts</string>
+    <string name="channel_watchdog_desc">Emergency failsafe disarm notices</string>
+    <string name="accessibility_service_desc">DisciplineOS App Lock Service monitors app launches to enforce Disciplined Phone mode restrictions.</string>
+</resources>

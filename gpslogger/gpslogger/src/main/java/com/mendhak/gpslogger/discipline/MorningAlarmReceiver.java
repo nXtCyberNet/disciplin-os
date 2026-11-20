@@ -1,0 +1,156 @@
+package com.mendhak.gpslogger.discipline;
+
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.PowerManager;
+import androidx.core.app.NotificationCompat;
+import com.mendhak.gpslogger.R;
+import com.mendhak.gpslogger.common.NotificationChannelNames;
+import com.mendhak.gpslogger.common.slf4j.Logs;
+import org.slf4j.Logger;
+
+/**
+ * MorningAlarmReceiver
+ *
+ * Catches alarm clock triggers, system boot events, package upgrades,
+ * and user actions from the alarm notification shade (Start Run / Snooze).
+ */
+public class MorningAlarmReceiver extends BroadcastReceiver {
+
+    private static final Logger LOG = Logs.of(MorningAlarmReceiver.class);
+
+    public static final String ACTION_TRIGGER_ALARM = "com.mendhak.gpslogger.discipline.TRIGGER_ALARM";
+    public static final String ACTION_SNOOZE_ALARM = "com.mendhak.gpslogger.discipline.SNOOZE_ALARM";
+    public static final String ACTION_START_RUN = "com.mendhak.gpslogger.discipline.START_RUN";
+
+    public static final int REQUEST_CODE_ALARM = 8801;
+    public static final int REQUEST_CODE_ACTIVITY = 8802;
+    public static final int REQUEST_CODE_ACTION_RUN = 8803;
+    public static final int REQUEST_CODE_ACTION_SNOOZE = 8804;
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        String action = intent != null ? intent.getAction() : null;
+        LOG.info("MorningAlarmReceiver received action: " + action);
+
+        if (Intent.ACTION_BOOT_COMPLETED.equals(action) ||
+            Intent.ACTION_MY_PACKAGE_REPLACED.equals(action) ||
+            Intent.ACTION_TIME_CHANGED.equals(action) ||
+            Intent.ACTION_TIMEZONE_CHANGED.equals(action) ||
+            Intent.ACTION_DATE_CHANGED.equals(action) ||
+            "android.intent.action.LOCKED_BOOT_COMPLETED".equals(action) ||
+            "android.intent.action.QUICKBOOT_POWERON".equals(action) ||
+            "com.htc.intent.action.QUICKBOOT_POWERON".equals(action)) {
+            LOG.info("System boot/time/upgrade event: ensuring unbreakable morning alarm is scheduled.");
+            MorningAlarmManager.scheduleAlarm(context);
+            return;
+        }
+
+        if (ACTION_SNOOZE_ALARM.equals(action)) {
+            LOG.info("Notification action: Snooze clicked.");
+            MorningAlarmActivity.dismissNotification(context);
+            int snoozeMins = MorningAlarmManager.getSnoozeMinutes(context);
+            MorningAlarmManager.scheduleSnooze(context, snoozeMins);
+            return;
+        }
+
+        if (ACTION_START_RUN.equals(action)) {
+            LOG.info("Notification action: Start Run clicked.");
+            MorningAlarmActivity.dismissNotification(context);
+            MorningAlarmActivity.triggerWorkoutStart(context);
+            return;
+        }
+
+        if (ACTION_TRIGGER_ALARM.equals(action)) {
+            triggerAlarmWakeup(context);
+        }
+    }
+
+    public static void triggerImmediately(Context context) {
+        Intent intent = new Intent(context, MorningAlarmReceiver.class);
+        intent.setAction(ACTION_TRIGGER_ALARM);
+        context.sendBroadcast(intent);
+    }
+
+    private void triggerAlarmWakeup(Context context) {
+        LOG.info("Triggering Morning Alarm Wake-Up sequence!");
+
+        // 1. Wake the CPU with a safe timeout
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        if (pm != null) {
+            PowerManager.WakeLock wakeLock = pm.newWakeLock(
+                    PowerManager.PARTIAL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "GPSLogger:MorningAlarmWakeLock"
+            );
+            wakeLock.acquire(30000L); // 30 sec max
+        }
+
+        // 2. Reschedule tomorrow's standard alarm so daily routine continues
+        MorningAlarmManager.scheduleNextDailyAlarm(context);
+        MorningAlarmManager.getInstance(context).triggerAlarm();
+
+        // 3. Build Full Screen Intent to MorningAlarmActivity
+        Intent alarmActivityIntent = new Intent(context, MorningAlarmActivity.class);
+        alarmActivityIntent.addFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK |
+                Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+        );
+
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(
+                context,
+                REQUEST_CODE_ACTIVITY,
+                alarmActivityIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // 4. Notification Shade quick action buttons
+        Intent runIntent = new Intent(context, MorningAlarmReceiver.class);
+        runIntent.setAction(ACTION_START_RUN);
+        PendingIntent runPi = PendingIntent.getBroadcast(
+                context,
+                REQUEST_CODE_ACTION_RUN,
+                runIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        Intent snoozeIntent = new Intent(context, MorningAlarmReceiver.class);
+        snoozeIntent.setAction(ACTION_SNOOZE_ALARM);
+        PendingIntent snoozePi = PendingIntent.getBroadcast(
+                context,
+                REQUEST_CODE_ACTION_SNOOZE,
+                snoozeIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // 5. Post high priority full screen alarm notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelNames.GPSLOGGER_ALARM)
+                .setSmallIcon(R.mipmap.gpsloggericon3)
+                .setContentTitle("⏰ Morning Alarm - Run Mission")
+                .setContentText("Wake up! Put on your running shoes. No excuses.")
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setContentIntent(fullScreenPendingIntent)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .addAction(0, "🏃 START RUN", runPi)
+                .addAction(0, "💤 SNOOZE (15M)", snoozePi);
+
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
+        }
+
+        // 6. Launch Alarm Activity directly
+        try {
+            context.startActivity(alarmActivityIntent);
+        } catch (Exception ex) {
+            LOG.error("Failed to launch MorningAlarmActivity directly", ex);
+        }
+    }
+}

@@ -1,0 +1,46 @@
+# Android & Gradle
+.idea/
+*.iml
+.gradle/
+build/
+*/build/
+*/*/build/
+local.properties
+.kotlin/
+captures/
+.DS_Store
+
+# Built Application Binaries
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+
+# Python & Local Secrets
+__pycache__/
+*.py[cod]
+*$py.class
+*.log
+.venv/
+venv/
+env/
+*.local.json
+dispatcher/config.local.json
+
+# Root dumps and temporary screenshots
+*.dump.xml
+app_dump.xml
+current_dump.xml
+dialog_dump.xml
+gpslogger_active.png
+gpslogger_main.png
+hud_dialog_screen_fixed.png
+hud_dialog_screen.png
+hud_targets_screen.png
+screen_check.png
+targets_dialog.png
+
+# Legacy discontinued server
+vikunja-server/
+run_vikunja.sh
