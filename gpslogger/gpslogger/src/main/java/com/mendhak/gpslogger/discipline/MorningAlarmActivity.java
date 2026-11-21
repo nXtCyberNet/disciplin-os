@@ -234,13 +234,12 @@ public class MorningAlarmActivity extends AppCompatActivity {
         isHandled = true;
         LOG.info("Alarm snoozed from alarm screen!");
         stopAlarmAudioAndVibration();
+        dismissNotification(this);
 
-        int snoozeMins = MorningAlarmManager.getSnoozeMinutes(this);
-        long nextTrigger = MorningAlarmManager.scheduleSnooze(this, snoozeMins);
-        if (nextTrigger > 0) {
-            MorningAlarmManager.postSnoozeNotification(this, nextTrigger, snoozeMins);
-            String formattedTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date(nextTrigger));
-            Toast.makeText(this, "💤 Snoozed for " + snoozeMins + " min (" + formattedTime + ") [1/1 Used]", Toast.LENGTH_LONG).show();
+        try {
+            MorningAlarmManager.getInstance(this).snoozeAlarm();
+        } catch (Exception ex) {
+            LOG.error("Error invoking snoozeAlarm", ex);
         }
 
         finish();

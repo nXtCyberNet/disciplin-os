@@ -56,11 +56,8 @@ public class MorningAlarmReceiver extends BroadcastReceiver {
                 LOG.warn("Snooze rejected: 1-time snooze limit already reached.");
                 return;
             }
-            int snoozeMins = MorningAlarmManager.getSnoozeMinutes(context);
-            long nextTrigger = MorningAlarmManager.scheduleSnooze(context, snoozeMins);
-            if (nextTrigger > 0) {
-                MorningAlarmManager.postSnoozeNotification(context, nextTrigger, snoozeMins);
-            }
+            MorningAlarmActivity.dismissNotification(context);
+            MorningAlarmManager.getInstance(context).snoozeAlarm();
             return;
         }
 
@@ -146,7 +143,7 @@ public class MorningAlarmReceiver extends BroadcastReceiver {
         // 5. Post high priority full screen alarm notification
         boolean canSnooze = MorningAlarmManager.canSnooze(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelNames.GPSLOGGER_ALARM)
-                .setSmallIcon(R.mipmap.gpsloggericon3)
+                .setSmallIcon(R.drawable.notification)
                 .setContentTitle(canSnooze ? "⏰ Morning Alarm - Run Mission" : "⏰ FINAL WAKE-UP (NO SNOOZE)")
                 .setContentText(canSnooze ? "Wake up! Put on your running shoes. No excuses." : "Snooze limit reached! Time to start your run.")
                 .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -164,7 +161,11 @@ public class MorningAlarmReceiver extends BroadcastReceiver {
 
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm != null) {
-            nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
+            try {
+                nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
+            } catch (Exception ex) {
+                LOG.error("Failed to post alarm notification", ex);
+            }
         }
 
         // 6. Launch Alarm Activity directly

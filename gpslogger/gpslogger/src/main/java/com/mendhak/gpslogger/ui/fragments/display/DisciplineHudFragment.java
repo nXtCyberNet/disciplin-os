@@ -931,6 +931,9 @@ public class DisciplineHudFragment extends GenericViewFragment implements
     public void onAlarmStateChanged(MorningAlarmManager.AlarmState state, String statusMessage) {
         if (getActivity() == null) return;
         getActivity().runOnUiThread(() -> {
+            Context ctx = getContext();
+            if (ctx == null || !isAdded()) return;
+
             if (state == MorningAlarmManager.AlarmState.RINGING) {
                 AlarmRingingDialog.show(getActivity(), alarmManager, this::startWorkoutSession);
             } else {
@@ -940,10 +943,10 @@ public class DisciplineHudFragment extends GenericViewFragment implements
             if (txtAlarmStatus != null) {
                 txtAlarmStatus.setText(statusMessage);
             }
-            if (txtAlarmSubstatus != null && txtAlarmHeader != null && isAdded()) {
+            if (txtAlarmSubstatus != null && txtAlarmHeader != null) {
                 if (state == MorningAlarmManager.AlarmState.RINGING) {
                     txtAlarmSubstatus.setText("⚠️ Ringing! Tap 'START WORKOUT' to silence and begin mission!");
-                    txtAlarmHeader.setTextColor(ContextCompat.getColor(requireContext(), R.color.hud_accent_red));
+                    txtAlarmHeader.setTextColor(ContextCompat.getColor(ctx, R.color.hud_accent_red));
                     if (btnAlarmSnooze != null) btnAlarmSnooze.setVisibility(View.VISIBLE);
                 } else if (state == MorningAlarmManager.AlarmState.SNOOZED) {
                     txtAlarmSubstatus.setText("💤 Snooze active. Alarm will ring again when timer ends.");
@@ -951,11 +954,11 @@ public class DisciplineHudFragment extends GenericViewFragment implements
                     if (btnAlarmSnooze != null) btnAlarmSnooze.setVisibility(View.GONE);
                 } else if (state == MorningAlarmManager.AlarmState.RUNNING_MISSION) {
                     txtAlarmSubstatus.setText("🏃 Workout active. Keep moving to prevent stationary penalty!");
-                    txtAlarmHeader.setTextColor(ContextCompat.getColor(requireContext(), R.color.hud_accent_green));
+                    txtAlarmHeader.setTextColor(ContextCompat.getColor(ctx, R.color.hud_accent_green));
                     if (btnAlarmSnooze != null) btnAlarmSnooze.setVisibility(View.GONE);
                 } else if (state == MorningAlarmManager.AlarmState.COMPLETED) {
                     txtAlarmSubstatus.setText("🏆 Target distance & pace achieved! Alarm disarmed.");
-                    txtAlarmHeader.setTextColor(ContextCompat.getColor(requireContext(), R.color.hud_accent_green));
+                    txtAlarmHeader.setTextColor(ContextCompat.getColor(ctx, R.color.hud_accent_green));
                     if (btnAlarmSnooze != null) btnAlarmSnooze.setVisibility(View.GONE);
                 } else {
                     txtAlarmSubstatus.setText("If pace does not match on finish, alarm will not stop and restarts!");
@@ -970,6 +973,7 @@ public class DisciplineHudFragment extends GenericViewFragment implements
     public void onCountdownTick(long millisUntilFinished) {
         if (getActivity() == null) return;
         getActivity().runOnUiThread(() -> {
+            if (getContext() == null || !isAdded()) return;
             if (txtAlarmStatus != null) {
                 long sec = (millisUntilFinished / 1000) % 60;
                 long min = (millisUntilFinished / 1000) / 60;

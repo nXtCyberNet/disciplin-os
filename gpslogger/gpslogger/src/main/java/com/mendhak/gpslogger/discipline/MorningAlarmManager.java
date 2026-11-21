@@ -317,7 +317,7 @@ public class MorningAlarmManager {
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelNames.GPSLOGGER_ALARM)
-                .setSmallIcon(R.mipmap.gpsloggericon3)
+                .setSmallIcon(R.drawable.notification)
                 .setContentTitle("⏰ Alarm Snoozed (" + snoozeMins + "m)")
                 .setContentText("Next alarm at " + timeStr + ". Put on your running shoes!")
                 .setSubText("Discipline Mission")
@@ -329,8 +329,12 @@ public class MorningAlarmManager {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .addAction(0, "🏃 START NOW", runPi);
 
-        nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
-        LOG.info("Posted Snooze countdown notification until " + timeStr);
+        try {
+            nm.notify(NotificationChannelNames.GPSLOGGER_ALARM_NOTIFICATION_ID, builder.build());
+            LOG.info("Posted Snooze countdown notification until " + timeStr);
+        } catch (Exception ex) {
+            LOG.warn("Failed to post snooze notification: " + ex.getMessage());
+        }
     }
 
     public static void scheduleTestAlarm(Context context, int delaySeconds) {
@@ -374,10 +378,19 @@ public class MorningAlarmManager {
             LOG.info("Morning Alarm registered via setAlarmClock for " + new Date(triggerAtMs).toString());
         } catch (SecurityException se) {
             LOG.warn("Cannot setAlarmClock due to security exception, fallback to setExactAndAllowWhileIdle", se);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pi);
-            } else {
-                am.set(AlarmManager.RTC_WAKEUP, triggerAtMs, pi);
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMs, pi);
+                } else {
+                    am.set(AlarmManager.RTC_WAKEUP, triggerAtMs, pi);
+                }
+            } catch (Exception ex) {
+                LOG.error("Failed to set alarm via fallback", ex);
+                try {
+                    am.set(AlarmManager.RTC_WAKEUP, triggerAtMs, pi);
+                } catch (Exception e) {
+                    LOG.error("Complete failure setting alarm", e);
+                }
             }
         }
     }
@@ -460,13 +473,16 @@ public class MorningAlarmManager {
      */
     public void snoozeAlarm() {
         mainHandler.post(() -> {
-            if (currentState != AlarmState.RINGING) return;
-
             stopSirenSound();
             currentState = AlarmState.SNOOZED;
 
             final int snoozeMinutes = getSnoozeDurationMinutes();
             voiceCoach.announceSnooze(snoozeMinutes);
+
+            long nextTrigger = scheduleSnooze(context, snoozeMinutes);
+            if (nextTrigger > 0) {
+                postSnoozeNotification(context, nextTrigger, snoozeMinutes);
+            }
 
             long totalSnoozeMs = snoozeMinutes * 60 * 1000L;
             snoozeRemainingMs = totalSnoozeMs;
