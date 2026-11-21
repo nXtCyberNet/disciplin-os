@@ -6,9 +6,15 @@ import android.util.Log
 import com.personal.disciplinelock.data.math.AnswerType
 import com.personal.disciplinelock.data.math.MathQuestionEntity
 import com.personal.disciplinelock.data.math.MathQuestionRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Represents the current state of a math quiz session.
@@ -64,6 +70,8 @@ class MathEngineManager(private val context: Context) {
     private val _quizState = MutableStateFlow(MathQuizState())
     val quizState: StateFlow<MathQuizState> = _quizState.asStateFlow()
 
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
     init {
         val passed = hasPassedQuiz()
         val blocked = isCurrentlyBlocked()
@@ -73,6 +81,25 @@ class MathEngineManager(private val context: Context) {
             blockRemainingSeconds = getBlockRemainingSeconds(),
             availableQuestionCount = questionRepository.getAvailableQuestionCount()
         )
+        startTickerLoop()
+    }
+
+    private fun startTickerLoop() {
+        scope.launch {
+            while (isActive) {
+                delay(1000L)
+                try {
+                    val state = _quizState.value
+                    if (state.isBlocked || isCurrentlyBlocked()) {
+                        updateBlockState()
+                    } else if (state.isQuizActive && !state.quizCompleted) {
+                        tickTimer()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Error in MathEngine ticker", e)
+                }
+            }
+        }
     }
 
     // ==================== Configuration ====================
