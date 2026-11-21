@@ -142,7 +142,17 @@ class LockGateViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun selectTab(tab: LockTab) {
-        _uiState.update { it.copy(selectedTab = tab) }
+        val passed = mathEngine.hasPassedQuiz()
+        val blocked = mathEngine.isCurrentlyBlocked()
+        val blockRemaining = mathEngine.getBlockRemainingSeconds()
+        _uiState.update {
+            it.copy(
+                selectedTab = tab,
+                isMathQuizPassed = passed,
+                isMathBlocked = blocked,
+                mathBlockRemainingSeconds = blockRemaining
+            )
+        }
     }
 
     // Math Actions

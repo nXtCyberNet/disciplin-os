@@ -55,6 +55,7 @@ class SecurePreferences(context: Context) {
         private const val KEY_MORNING_TARGET_PACE_MIN_PER_KM = "morning_target_pace_min_per_km"
         private const val KEY_MORNING_SNOOZE_MINUTES = "morning_snooze_minutes"
         private const val KEY_MORNING_STATIONARY_GRACE_SECONDS = "morning_stationary_grace_seconds"
+        private const val KEY_LAST_DAILY_RESET_DATE = "last_daily_reset_date"
         val DEFAULT_WHITELIST = setOf(
             "com.google.android.dialer",
             "com.android.dialer",
@@ -82,6 +83,10 @@ class SecurePreferences(context: Context) {
     var dailyResetMinute: Int
         get() = prefs.getInt(KEY_DAILY_RESET_MINUTE, 0)
         set(value) = prefs.edit().putInt(KEY_DAILY_RESET_MINUTE, value.coerceIn(0, 59)).apply()
+
+    var lastDailyResetDate: String?
+        get() = prefs.getString(KEY_LAST_DAILY_RESET_DATE, null)
+        set(value) = prefs.edit().putString(KEY_LAST_DAILY_RESET_DATE, value).apply()
 
     val formattedDailyResetTime: String
         get() {

@@ -42,7 +42,12 @@ fun LockGateScreen(
                 isMathBlocked = uiState.isMathBlocked,
                 mathBlockRemainingSeconds = uiState.mathBlockRemainingSeconds,
                 overallStreak = uiState.overallStreak,
-                onNavigateToMathQuiz = { viewModel.selectTab(LockTab.MATH_ENGINE) },
+                onNavigateToMathQuiz = {
+                    viewModel.selectTab(LockTab.MATH_ENGINE)
+                    if (!uiState.isMathQuizPassed && !uiState.isMathBlocked && !uiState.mathQuizState.isQuizActive) {
+                        viewModel.startMathQuiz()
+                    }
+                },
                 onNavigateToSettings = { viewModel.selectTab(LockTab.SETTINGS) },
                 onToggleDailyTask = { viewModel.toggleDailyTask(it) },
                 onAddDailyTask = { viewModel.addDailyTask(it) },

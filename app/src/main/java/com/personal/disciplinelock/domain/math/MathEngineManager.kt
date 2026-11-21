@@ -52,6 +52,7 @@ class MathEngineManager(private val context: Context) {
         private const val KEY_BLOCK_UNTIL = "block_until_ms"
         private const val KEY_QUIZ_PASSED = "quiz_passed"
         private const val KEY_QUIZ_PASSED_TIMESTAMP = "quiz_passed_timestamp"
+        private const val KEY_QUIZ_PASSED_DATE = "quiz_passed_date"
         private const val KEY_MATH_ENGINE_ENABLED = "math_engine_enabled"
         const val BLOCK_DURATION_MS = 5 * 60 * 1000L // 5 minutes
         private const val QUIZ_VALID_DURATION_MS = 24 * 60 * 60 * 1000L // 24 hours
@@ -62,6 +63,17 @@ class MathEngineManager(private val context: Context) {
 
     private val _quizState = MutableStateFlow(MathQuizState())
     val quizState: StateFlow<MathQuizState> = _quizState.asStateFlow()
+
+    init {
+        val passed = hasPassedQuiz()
+        val blocked = isCurrentlyBlocked()
+        _quizState.value = MathQuizState(
+            quizCompleted = passed,
+            isBlocked = blocked,
+            blockRemainingSeconds = getBlockRemainingSeconds(),
+            availableQuestionCount = questionRepository.getAvailableQuestionCount()
+        )
+    }
 
     // ==================== Configuration ====================
 
@@ -133,16 +145,30 @@ class MathEngineManager(private val context: Context) {
     // ==================== Quiz Pass Status ====================
 
     /**
-     * Check if the quiz has been passed (valid for 24 hours).
+     * Check if the quiz has been passed (valid for current day).
      */
     fun hasPassedQuiz(): Boolean {
         if (!isMathEngineEnabled) return true // if disabled, always pass
         val passed = prefs.getBoolean(KEY_QUIZ_PASSED, false)
         if (!passed) return false
+        val passedDate = prefs.getString(KEY_QUIZ_PASSED_DATE, null)
+        val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+        if (passedDate != null) {
+            if (passedDate != todayStr) {
+                // Passed on a previous date -> reset
+                resetQuizPass()
+                return false
+            }
+            return true
+        }
         val timestamp = prefs.getLong(KEY_QUIZ_PASSED_TIMESTAMP, 0L)
         val now = System.currentTimeMillis()
-        // Quiz pass expires after 24 hours
-        return (now - timestamp) < QUIZ_VALID_DURATION_MS
+        if ((now - timestamp) < QUIZ_VALID_DURATION_MS) {
+            prefs.edit().putString(KEY_QUIZ_PASSED_DATE, todayStr).apply()
+            return true
+        }
+        resetQuizPass()
+        return false
     }
 
     /**
@@ -150,9 +176,11 @@ class MathEngineManager(private val context: Context) {
      */
     fun markQuizPassed() {
         clearBlock()
+        val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
         prefs.edit()
             .putBoolean(KEY_QUIZ_PASSED, true)
             .putLong(KEY_QUIZ_PASSED_TIMESTAMP, System.currentTimeMillis())
+            .putString(KEY_QUIZ_PASSED_DATE, todayStr)
             .apply()
         _quizState.value = _quizState.value.copy(
             isQuizActive = false,
@@ -172,7 +200,14 @@ class MathEngineManager(private val context: Context) {
         prefs.edit()
             .putBoolean(KEY_QUIZ_PASSED, false)
             .remove(KEY_QUIZ_PASSED_TIMESTAMP)
+            .remove(KEY_QUIZ_PASSED_DATE)
             .apply()
+        _quizState.value = _quizState.value.copy(
+            isQuizActive = false,
+            quizCompleted = false,
+            currentQuestion = null,
+            lastFeedback = null
+        )
     }
 
     // ==================== Quiz Session Management ====================

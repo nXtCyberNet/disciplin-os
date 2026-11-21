@@ -88,10 +88,31 @@ class DailyResetManager(
     }
 
     /**
+     * Checks if a daily reset was missed (e.g. device was off or in deep Doze) and executes it immediately.
+     */
+    fun checkAndTriggerMissedReset() {
+        val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+        val lastReset = securePreferences.lastDailyResetDate
+        if (lastReset == null) {
+            securePreferences.lastDailyResetDate = todayStr
+            scheduleDailyReset()
+            return
+        }
+        if (lastReset != todayStr) {
+            Log.i(TAG, "Missed daily reset detected (last: $lastReset, today: $todayStr). Triggering reset now.")
+            onDailyResetTriggered()
+        } else {
+            scheduleDailyReset()
+        }
+    }
+
+    /**
      * Executes the daily reset sequence. Called when ACTION_DAILY_RESET fires.
      */
     fun onDailyResetTriggered() {
         Log.i(TAG, "⏰ Daily reset triggered! Starting new daily cycle...")
+        val todayStr = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date())
+        securePreferences.lastDailyResetDate = todayStr
 
         // 1. Refresh daily tasks and habits for the new day
         habitTaskManager.refresh()

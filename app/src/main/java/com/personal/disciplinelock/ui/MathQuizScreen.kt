@@ -131,7 +131,7 @@ fun MathQuizTabContent(
             item { BlockedScreen(quizState) }
         }
         // Quiz Completed Screen
-        else if (quizState.quizCompleted) {
+        else if (quizPassed) {
             item { QuizCompletedScreen(quizState, onStartQuiz) }
         }
         // Active Quiz
@@ -149,7 +149,7 @@ fun MathQuizTabContent(
             }
         }
         // Start Quiz Button
-        else if (!quizPassed && mathEngineEnabled) {
+        else if (mathEngineEnabled) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -329,6 +329,16 @@ fun QuizCompletedScreen(quizState: MathQuizState, onStartQuiz: () -> Unit) {
                 color = Color(0xFFA5D6A7),
                 fontSize = 12.sp
             )
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = onStartQuiz,
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF81C784))
+            ) {
+                Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Practice Again", fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

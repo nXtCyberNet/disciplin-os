@@ -137,7 +137,7 @@ class DisciplineApplication : Application() {
             disciplineModeManager = disciplineModeManager,
             mathEngineManager = mathEngineManager
         )
-        dailyResetManager.scheduleDailyReset()
+        dailyResetManager.checkAndTriggerMissedReset()
 
         setupCrashWatchdog()
 
