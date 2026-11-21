@@ -211,10 +211,13 @@ class LocalWebhookServer(
 
             // Read HTTP headers
             var contentLength = 0
+            var acceptHeader = ""
             var headerLine: String? = reader.readLine()
             while (!headerLine.isNullOrEmpty()) {
                 if (headerLine.startsWith("Content-Length:", ignoreCase = true)) {
                     contentLength = headerLine.substringAfter(":").trim().toIntOrNull() ?: 0
+                } else if (headerLine.startsWith("Accept:", ignoreCase = true)) {
+                    acceptHeader = headerLine.substringAfter(":").trim()
                 }
                 headerLine = reader.readLine()
             }
@@ -365,14 +368,22 @@ class LocalWebhookServer(
                 }
             }
 
+            val isHtml = (uriPath == "/" || uriPath == "/dashboard" || uriPath == "/index.html") &&
+                    (acceptHeader.contains("text/html", ignoreCase = true) || uriPath == "/dashboard")
+            val contentType = if (isHtml) "text/html; charset=utf-8" else "application/json"
+            val payload = if (isHtml) buildPhoneDashboardHtml() else responseJson
+            val payloadBytes = payload.toByteArray(Charsets.UTF_8)
+
             // Send standard HTTP response
             writer.print("HTTP/1.1 200 OK\r\n")
-            writer.print("Content-Type: application/json\r\n")
+            writer.print("Content-Type: $contentType\r\n")
             writer.print("Access-Control-Allow-Origin: *\r\n")
-            writer.print("Content-Length: ${responseJson.toByteArray().size}\r\n")
+            writer.print("Content-Length: ${payloadBytes.size}\r\n")
             writer.print("Connection: close\r\n\r\n")
-            writer.print(responseJson)
             writer.flush()
+            val rawOut = client.getOutputStream()
+            rawOut.write(payloadBytes)
+            rawOut.flush()
         } catch (e: Exception) {
             Log.e(TAG, "Error handling webhook client: ${e.message}", e)
         } finally {
@@ -772,6 +783,316 @@ class LocalWebhookServer(
             put("calories", calories)
             put("isFinished", isFinished)
         }.toString()
+    }
+
+    private fun buildPhoneDashboardHtml(): String {
+        return """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DisciplineOS Phone Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text: #c9d1d9;
+      --text-bold: #f0f6fc;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --danger: #f85149;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .brand h1 { font-size: 20px; font-weight: 800; color: var(--text-bold); }
+    .brand p { font-size: 12px; color: var(--text-muted); }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      background: #21262d;
+      color: var(--text-bold);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-bold);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+    .stat-box {
+      background: #090d13;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+    .stat-val { font-size: 16px; font-weight: 800; color: var(--text-bold); margin-top: 4px; }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-success { background: rgba(63, 185, 80, 0.15); color: var(--success); border: 1px solid rgba(63, 185, 80, 0.3); }
+    .badge-warning { background: rgba(210, 153, 34, 0.15); color: var(--warning); border: 1px solid rgba(210, 153, 34, 0.3); }
+    .mission-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #090d13;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      background: #090d13;
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 12px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>📱 DisciplineOS Phone Node</h1>
+      <p id="sub-header">Live Phone Companion • Port 8080</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <a href="http://100.113.205.122:5050" target="_blank" class="btn btn-primary">💻 Open PC Dispatcher (:5050)</a>
+      <button class="btn" onclick="fetchStatus()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- Lock Mode & Gate Summary -->
+  <div class="card">
+    <div class="card-title">
+      <span>🛡️ Access Status & Discipline Gates</span>
+      <span id="mode-badge" class="status-badge badge-warning">Loading...</span>
+    </div>
+    <p id="mode-summary" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Syncing with Discipline OS kernel...</p>
+    <div class="grid">
+      <div class="stat-box">
+        <div class="stat-label">🏃 Gate 1: Morning Run</div>
+        <div class="stat-val" id="gate-alarm-val">Target: 2.00 km</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="alarm-time-val">Scheduled: 06:30 AM</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🧠 Gate 2: Math Engine</div>
+        <div class="stat-val" id="gate-math-val">Checking...</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="math-sub-val">5 Questions Daily</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">👟 Today's Activity</div>
+        <div class="stat-val" id="activity-steps">0 Steps</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Health Webhook Sync</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Obligations & Missions -->
+  <div class="card">
+    <div class="card-title">
+      <span>📋 Daily Missions & Obligations</span>
+      <span id="missions-count" style="font-size: 12px; color: var(--text-muted);">0 items</span>
+    </div>
+    <div id="missions-list">
+      <div style="font-size: 12px; color: var(--text-muted);">Fetching missions...</div>
+    </div>
+
+    <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); display: flex; gap: 8px;">
+      <input type="text" id="new-mission-title" placeholder="Add obligation (e.g. Read 20 pages)...">
+      <button class="btn btn-primary" onclick="addMission()">➕ Add</button>
+    </div>
+  </div>
+
+  <!-- Endpoints & Tailscale Node Info -->
+  <div class="card">
+    <div class="card-title">
+      <span>🌐 Webhook Endpoints</span>
+    </div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent); display: flex; flex-wrap: wrap; gap: 8px;">
+      <span style="background: #090d13; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--card-border);">POST /webhook/mission/{title}</span>
+      <span style="background: #090d13; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--card-border);">POST /webhook/run</span>
+      <span style="background: #090d13; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--card-border);">POST /webhook/health</span>
+      <span style="background: #090d13; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--card-border);">GET /webhook/status</span>
+    </div>
+  </div>
+
+  <script>
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/webhook/status');
+        const data = await res.json();
+
+        // Update header IP
+        if (data.ip) {
+          document.getElementById('sub-header').innerText = 'Tailscale Node: ' + data.ip + ':' + (data.port || 8080);
+        }
+
+        // Lock mode
+        const mode = data.disciplineMode || {};
+        const modeBadge = document.getElementById('mode-badge');
+        const modeSummary = document.getElementById('mode-summary');
+        if (mode.mode === 'NORMAL_PHONE') {
+          modeBadge.className = 'status-badge badge-success';
+          modeBadge.innerText = '● NORMAL PHONE';
+          modeSummary.innerText = '✅ ' + (mode.statusSummary || 'All Gates Cleared! Normal Phone Access Granted');
+        } else {
+          modeBadge.className = 'status-badge badge-warning';
+          modeBadge.innerText = '🔒 LOCKED';
+          modeSummary.innerText = '⚠️ ' + (mode.statusSummary || 'Discipline Lock Engaged');
+        }
+
+        // Math status
+        const math = data.mathEngine || {};
+        const mathVal = document.getElementById('gate-math-val');
+        const mathSub = document.getElementById('math-sub-val');
+        if (math.passed) {
+          mathVal.innerHTML = '<span style="color: var(--success);">Passed ✅</span>';
+          mathSub.innerText = 'Math Quiz Completed Today';
+        } else if (math.blocked) {
+          mathVal.innerHTML = '<span style="color: var(--danger);">Blocked ⛔</span>';
+          mathSub.innerText = 'Penalty active';
+        } else {
+          mathVal.innerHTML = '<span style="color: var(--warning);">Pending ⏳</span>';
+          mathSub.innerText = '5 questions required';
+        }
+
+        // Morning Alarm
+        const alarm = data.morningAlarm || {};
+        if (alarm.targetDistanceMeters) {
+          document.getElementById('gate-alarm-val').innerText = 'Target: ' + (alarm.targetDistanceMeters / 1000).toFixed(2) + ' km';
+        }
+        if (alarm.alarmTime) {
+          document.getElementById('alarm-time-val').innerText = 'Alarm: ' + alarm.alarmTime + ' (Pace: ' + (alarm.targetPaceMinPerKm || 9) + ' min/km)';
+        }
+
+        // Steps
+        document.getElementById('activity-steps').innerText = (data.latestSteps || 0).toLocaleString() + ' Steps';
+
+        // Missions
+        renderMissions(data.missions || []);
+      } catch (e) {
+        console.error('Failed to fetch status:', e);
+      }
+    }
+
+    function renderMissions(missions) {
+      const list = document.getElementById('missions-list');
+      document.getElementById('missions-count').innerText = missions.length + ' item' + (missions.length === 1 ? '' : 's');
+      if (!missions || missions.length === 0) {
+        list.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); padding: 8px 0;">No active missions currently assigned.</div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < missions.length; i++) {
+        var m = missions[i];
+        var isDone = m.completed === true;
+        var safeTitle = m.title.replace(/'/g, "\\'");
+        html += '<div class="mission-item">' +
+          '<div>' +
+            '<div style="font-weight: 700; font-size: 13px; color: var(--text-bold);">' + m.title + '</div>' +
+            '<div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">' + (m.verificationStatus || (isDone ? 'Completed' : 'Pending Verification')) + '</div>' +
+          '</div>' +
+          '<div style="display: flex; align-items: center; gap: 8px;">' +
+            '<span class="status-badge ' + (isDone ? 'badge-success' : 'badge-warning') + '">' + (isDone ? 'Cleared ✅' : 'Pending ⏳') + '</span>' +
+            (!isDone ? '<button class="btn" style="font-size: 11px; padding: 4px 8px;" onclick="unlockMission(\'' + safeTitle + '\')">⚡ Unlock</button>' : '') +
+          '</div>' +
+        '</div>';
+      }
+      list.innerHTML = html;
+    }
+
+    async function unlockMission(title) {
+      if (!confirm("Fulfill mission '" + title + "' now?")) return;
+      try {
+        const res = await fetch('/webhook/mission/' + encodeURIComponent(title), { method: 'POST' });
+        const d = await res.json();
+        alert(d.verified ? '✅ Mission Unlocked!' : ('Status: ' + (d.message || d.status)));
+        fetchStatus();
+      } catch (e) {
+        alert('Error: ' + e);
+      }
+    }
+
+    async function addMission() {
+      const input = document.getElementById('new-mission-title');
+      const val = input.value.trim();
+      if (!val) return alert('Enter mission title');
+      try {
+        const res = await fetch('/webhook/mission/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: val })
+        });
+        const d = await res.json();
+        if (d.status === 'success') {
+          input.value = '';
+          alert('✅ Added mission: ' + val);
+          fetchStatus();
+        } else {
+          alert('Error: ' + d.message);
+        }
+      } catch (e) {
+        alert('Error: ' + e);
+      }
+    }
+
+    fetchStatus();
+    setInterval(fetchStatus, 4000);
+  </script>
+</body>
+</html>
+        """.trimIndent()
     }
 }
 

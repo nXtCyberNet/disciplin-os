@@ -592,6 +592,8 @@ DASHBOARD_HTML = """<!DOCTYPE html>
       } catch (e) {
         alert('Error saving model: ' + e);
       }
+    }
+
     function renderYoutubeHistory(videos) {
       const container = document.getElementById('yt-videos-container');
       if (!container) return;
